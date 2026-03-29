@@ -1,36 +1,96 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Web Store Extensions
 
-## Getting Started
+A SaaS-style browser extension directory built with Next.js and Supabase.
 
-First, run the development server:
+### Features
+
+- Email/password and Google authentication
+- User profile management with public profile pages at `/u/:username`
+- Extension submission flow with admin moderation (`pending`, `approved`, `rejected`)
+- Public homepage showing approved listings and categories
+- Super admin dashboard for listing review and user banning
+- Supabase SQL migration with RLS policies
+
+### Tech Stack
+
+- Next.js (App Router, TypeScript, Tailwind CSS)
+- Supabase Auth + Postgres
+- Vercel-ready deployment
+
+## Local Setup
+
+1) Install dependencies:
+
+```bash
+npm install
+```
+
+2) Create env file:
+
+```bash
+cp .env.example .env.local
+```
+
+Fill in:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+
+3) In Supabase SQL editor, run (in order):
+
+- `supabase/migrations/0001_init.sql`
+- `supabase/migrations/0002_curated_featured_extensions.sql` (adds curated Chrome Web Store featured listings and `featured_order`)
+
+If tables still don't appear, make sure you are in the correct Supabase project and rerun the SQL. Then verify:
+
+```sql
+select table_name
+from information_schema.tables
+where table_schema = 'public'
+  and table_name in ('profiles', 'extension_listings');
+```
+
+4) Create storage bucket:
+
+- Bucket name: `avatars`
+- Public bucket: `true`
+
+5) Run development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Password reset (Supabase)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The app sends reset links to `/auth/update-password`. In the Supabase dashboard:
 
-## Learn More
+1. Go to **Authentication** → **URL Configuration**.
+2. Under **Redirect URLs**, add both:
+   - `http://localhost:3000/auth/update-password` (or your dev port, e.g. `http://localhost:3001/auth/update-password`)
+   - `https://YOUR_PRODUCTION_DOMAIN/auth/update-password`
+3. **Site URL** should match your primary app URL (e.g. `http://localhost:3000` for local dev).
 
-To learn more about Next.js, take a look at the following resources:
+Users flow: **Log in** page → **Forgot password?** → enter email → **Send reset link** → open email → set a new password on `/auth/update-password`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Ensure **Authentication** → **Providers** → **Email** is enabled. For production, configure **SMTP** (or use Supabase’s default mail) so reset emails are delivered.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Admin Roles
 
-## Deploy on Vercel
+To make a user super admin, update their profile row in Supabase:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```sql
+update public.profiles
+set role = 'super_admin'
+where email = 'you@example.com';
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deploy to Vercel via GitHub
+
+1) Push this project to GitHub
+2) Import repo in Vercel
+3) Add same env vars in Vercel project settings
+4) Deploy
