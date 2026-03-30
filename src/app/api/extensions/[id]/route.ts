@@ -4,7 +4,6 @@ import { CATEGORIES, isValidStorePlatform, parseStorePlatform } from "@/lib/cons
 import { allocateListingSlug } from "@/lib/listing-slug";
 import { snapshotFromListingRow } from "@/lib/listing-snapshot";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { countWords, MIN_LISTING_DESCRIPTION_WORDS } from "@/lib/word-count";
 
 type RouteCtx = { params: Promise<{ id: string }> };
 
@@ -57,16 +56,6 @@ export async function PATCH(request: Request, ctx: RouteCtx) {
 
   if (name.length < 2 || description.length < 1) {
     return NextResponse.json({ error: "Name and description are required." }, { status: 400 });
-  }
-
-  const words = countWords(description);
-  if (words < MIN_LISTING_DESCRIPTION_WORDS) {
-    return NextResponse.json(
-      {
-        error: `Description must be at least ${MIN_LISTING_DESCRIPTION_WORDS} words. You have ${words} word${words === 1 ? "" : "s"}.`,
-      },
-      { status: 400 },
-    );
   }
 
   if (normExt !== normalizeExtensionId(String(row.extension_id))) {

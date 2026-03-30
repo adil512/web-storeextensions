@@ -1,19 +1,16 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
-import { CATEGORIES, LANGUAGES, REGIONS, STORE_PLATFORM_OPTIONS } from "@/lib/constants/listing";
-import { countWords, MIN_LISTING_DESCRIPTION_WORDS } from "@/lib/word-count";
+import { CATEGORIES, LANGUAGES, STORE_PLATFORM_OPTIONS } from "@/lib/constants/listing";
 
 export default function SubmitPage() {
   const supabase = createSupabaseBrowserClient();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
-  const [regionInputs, setRegionInputs] = useState<Record<string, number>>({});
   const [description, setDescription] = useState("");
-  const descWords = useMemo(() => countWords(description), [description]);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -33,14 +30,6 @@ export default function SubmitPage() {
     setMessage("");
     const formData = new FormData(event.currentTarget);
 
-    if (descWords < MIN_LISTING_DESCRIPTION_WORDS) {
-      setLoading(false);
-      setMessage(
-        `Description must be at least ${MIN_LISTING_DESCRIPTION_WORDS} words (you have ${descWords}). Expand with features, use cases, and privacy notes.`,
-      );
-      return;
-    }
-
     const payload = {
       name: formData.get("name"),
       description,
@@ -52,7 +41,7 @@ export default function SubmitPage() {
       homepageUrl: formData.get("homepageUrl"),
       storeUrl: formData.get("storeUrl"),
       logoUrl: formData.get("logoUrl"),
-      usersByRegion: regionInputs,
+      primaryCountry: formData.get("primaryCountry"),
       languages: selectedLanguages,
       requestFeaturedPlacement: formData.get("requestFeaturedPlacement") === "on",
     };
@@ -85,13 +74,10 @@ export default function SubmitPage() {
             required
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder={`At least ${MIN_LISTING_DESCRIPTION_WORDS} words: what it does, who it is for, permissions, and privacy.`}
+            placeholder="Describe what it does, who it is for, and key privacy/permission notes."
             rows={14}
             className="mt-1 min-h-[12rem] w-full rounded-xl border border-zinc-300 px-4 py-3 text-sm"
           />
-          <p className={`mt-1 text-xs ${descWords >= MIN_LISTING_DESCRIPTION_WORDS ? "text-emerald-700" : "text-zinc-600"}`}>
-            <span className="font-semibold tabular-nums">{descWords}</span> / {MIN_LISTING_DESCRIPTION_WORDS} words minimum
-          </p>
         </div>
         <select name="category" required className="w-full rounded-xl border border-zinc-300 px-4 py-3 text-sm">
           <option value="">Select category</option>
@@ -137,23 +123,14 @@ export default function SubmitPage() {
           <input name="currentUsers" type="number" min={0} required placeholder="Current users" className="w-full rounded-xl border border-zinc-300 px-4 py-3 text-sm" />
           <input name="uninstalls" type="number" min={0} required placeholder="Uninstalls in 30 days" className="w-full rounded-xl border border-zinc-300 px-4 py-3 text-sm" />
         </div>
-        <div className="grid gap-3 rounded-xl border border-zinc-200 p-4 sm:grid-cols-2">
-          {REGIONS.map((region) => (
-            <label key={region} className="text-sm text-zinc-700">
-              {region}
-              <input
-                type="number"
-                min={0}
-                className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm"
-                onChange={(event) =>
-                  setRegionInputs((prev) => ({
-                    ...prev,
-                    [region]: Number(event.target.value || 0),
-                  }))
-                }
-              />
-            </label>
-          ))}
+        <div>
+          <label className="text-sm font-semibold text-zinc-800">Primary country (most users)</label>
+          <input
+            name="primaryCountry"
+            required
+            placeholder="e.g. United States"
+            className="mt-1 w-full rounded-xl border border-zinc-300 px-4 py-3 text-sm"
+          />
         </div>
         <div className="rounded-xl border border-zinc-200 p-4">
           <p className="text-sm font-semibold text-zinc-900">Main Languages</p>

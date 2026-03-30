@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { ScrollToTop } from "@/components/scroll-to-top";
 import SiteHeader from "@/components/site-header";
@@ -18,6 +19,8 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim() || "G-MSC6DJ94C2";
 
 export async function generateMetadata(): Promise<Metadata> {
   const origin = await publicSiteOrigin();
@@ -38,6 +41,23 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      {GA_ID ? (
+        <>
+          <Script
+            id="ga-loader"
+            src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+            strategy="afterInteractive"
+          />
+          <Script id="ga-init" strategy="afterInteractive">
+            {`
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${GA_ID}');
+            `}
+          </Script>
+        </>
+      ) : null}
       <body className="min-h-full flex flex-col bg-zinc-50 text-zinc-900">
         <SiteHeader />
         <main className="flex-1">{children}</main>

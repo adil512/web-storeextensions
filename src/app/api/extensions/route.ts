@@ -5,7 +5,6 @@ import { getListingGeoFromRequest } from "@/lib/listing-geo";
 import { notifyAdminNewSubmission } from "@/lib/notify-admin";
 import { isValidStorePlatform, parseStorePlatform } from "@/lib/constants/listing";
 import { allocateListingSlug } from "@/lib/listing-slug";
-import { countWords, MIN_LISTING_DESCRIPTION_WORDS } from "@/lib/word-count";
 
 export async function POST(request: Request) {
   const { supabase, user } = await requireAuth();
@@ -41,15 +40,6 @@ export async function POST(request: Request) {
     .maybeSingle();
 
   const description = typeof body.description === "string" ? body.description.trim() : "";
-  const words = countWords(description);
-  if (words < MIN_LISTING_DESCRIPTION_WORDS) {
-    return NextResponse.json(
-      {
-        error: `Description must be at least ${MIN_LISTING_DESCRIPTION_WORDS} words (about ${MIN_LISTING_DESCRIPTION_WORDS * 5}–${MIN_LISTING_DESCRIPTION_WORDS * 7} characters of prose). You have ${words} word${words === 1 ? "" : "s"}.`,
-      },
-      { status: 400 },
-    );
-  }
 
   if (existing) {
     return NextResponse.json(
@@ -71,6 +61,7 @@ export async function POST(request: Request) {
   const store_platform = parseStorePlatform(body.storePlatform);
   const featured_placement_requested = body.requestFeaturedPlacement === true || body.requestFeaturedPlacement === "true";
   const nameTrimmed = String(body.name ?? "").trim();
+  const primaryCountry = String(body.primaryCountry ?? "").trim();
   const slug = await allocateListingSlug(supabase, nameTrimmed);
 
   const payload = {
@@ -89,7 +80,7 @@ export async function POST(request: Request) {
     store_url: body.storeUrl?.trim() || null,
     logo_url: body.logoUrl?.trim() || null,
     status: "pending",
-    listing_country: geo.listing_country,
+    listing_country: primaryCountry || geo.listing_country,
     listing_region: geo.listing_region,
     listing_city: geo.listing_city,
     featured_placement_requested,
