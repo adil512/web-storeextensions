@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: seo.metaTitle,
     description: seo.metaDescription,
-    alternates: { canonical: canonicalUrl(`/categories/${slug}`) },
+    alternates: { canonical: await canonicalUrl(`/categories/${slug}`) },
   };
 }
 

@@ -4,11 +4,13 @@ import { SITE_NAME } from "@/lib/brand";
 import { canonicalUrl } from "@/lib/site-url";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-export const metadata: Metadata = {
-  title: `Blog · ${SITE_NAME}`,
-  description: "Guides and updates for browser extension makers—listings, Manifest V3, store polish, and growth.",
-  alternates: { canonical: canonicalUrl("/blog") },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: `Blog · ${SITE_NAME}`,
+    description: "Guides and updates for browser extension makers—listings, Manifest V3, store polish, and growth.",
+    alternates: { canonical: await canonicalUrl("/blog") },
+  };
+}
 
 export type BlogListRow = {
   slug: string;

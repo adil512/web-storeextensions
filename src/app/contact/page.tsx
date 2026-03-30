@@ -5,11 +5,13 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { SITE_NAME } from "@/lib/brand";
 import { canonicalUrl } from "@/lib/site-url";
 
-export const metadata: Metadata = {
-  title: `Contact · ${SITE_NAME}`,
-  description: `Get in touch with our team for support, feedback, or partnership inquiries. We're here to help with your browser extensions, submissions, and account questions on ${SITE_NAME}.`,
-  alternates: { canonical: canonicalUrl("/contact") },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: `Contact · ${SITE_NAME}`,
+    description: `Get in touch with our team for support, feedback, or partnership inquiries. We're here to help with your browser extensions, submissions, and account questions on ${SITE_NAME}.`,
+    alternates: { canonical: await canonicalUrl("/contact") },
+  };
+}
 
 export default async function ContactPage() {
   const supabase = await createSupabaseServerClient();

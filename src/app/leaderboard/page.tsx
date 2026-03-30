@@ -5,12 +5,14 @@ import { canonicalUrl } from "@/lib/site-url";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Top Extension Creators – Leaderboard by Upvotes & Listings",
-  description:
-    "Explore the extension leaderboard featuring top developers ranked by upvotes and published listings. Discover the most popular Chrome, Firefox, and Edge extensions and the creators behind them.",
-  alternates: { canonical: canonicalUrl("/leaderboard") },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: "Top Extension Creators – Leaderboard by Upvotes & Listings",
+    description:
+      "Explore the extension leaderboard featuring top developers ranked by upvotes and published listings. Discover the most popular Chrome, Firefox, and Edge extensions and the creators behind them.",
+    alternates: { canonical: await canonicalUrl("/leaderboard") },
+  };
+}
 
 type LeaderRow = {
   profile_id: string;

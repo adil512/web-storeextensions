@@ -7,12 +7,14 @@ import { canonicalUrl } from "@/lib/site-url";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Extension Pricing – Submit & Promote Your Browser Extensions",
-  description:
-    "Explore flexible pricing plans to submit and promote your browser extensions. List for free or boost visibility with featured placements, priority review, and lifetime listings for Chrome, Firefox, and Edge.",
-  alternates: { canonical: canonicalUrl("/pricing") },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: "Extension Pricing – Submit & Promote Your Browser Extensions",
+    description:
+      "Explore flexible pricing plans to submit and promote your browser extensions. List for free or boost visibility with featured placements, priority review, and lifetime listings for Chrome, Firefox, and Edge.",
+    alternates: { canonical: await canonicalUrl("/pricing") },
+  };
+}
 
 const faqs = [
   {

@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${tool.title} · Extension tools · ${SITE_NAME}`,
     description: tool.description,
-    alternates: { canonical: canonicalUrl(`/extension-tools/${slug}`) },
+    alternates: { canonical: await canonicalUrl(`/extension-tools/${slug}`) },
   };
 }
 

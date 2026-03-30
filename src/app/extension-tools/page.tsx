@@ -4,12 +4,14 @@ import { TOOL_CATEGORIES, TOOLS, type ToolCategory } from "@/lib/tools-registry"
 import { canonicalUrl } from "@/lib/site-url";
 import { SITE_NAME } from "@/lib/brand";
 
-export const metadata: Metadata = {
-  title: `Extension developer tools · ${SITE_NAME}`,
-  description:
-    "Free browser extension utilities: manifest helpers, store listing checks, privacy drafts, keyword ideas, and more.",
-  alternates: { canonical: canonicalUrl("/extension-tools") },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: `Extension developer tools · ${SITE_NAME}`,
+    description:
+      "Free browser extension utilities: manifest helpers, store listing checks, privacy drafts, keyword ideas, and more.",
+    alternates: { canonical: await canonicalUrl("/extension-tools") },
+  };
+}
 
 function categoryTone(cat: ToolCategory): string {
   if (cat === "build") return "border-orange-200/90 bg-orange-50/50 text-orange-900";

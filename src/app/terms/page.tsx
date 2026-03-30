@@ -4,12 +4,14 @@ import { ContentPageHero, ContentPageMain, ContentSection } from "@/components/c
 import { SITE_NAME } from "@/lib/brand";
 import { canonicalUrl } from "@/lib/site-url";
 
-export const metadata: Metadata = {
-  title: "Extension Marketplace Usage",
-  description:
-    "Review the terms and conditions for using our browser extension marketplace, including rules for submissions, listings, accounts, and community interactions.",
-  alternates: { canonical: canonicalUrl("/terms") },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: "Extension Marketplace Usage",
+    description:
+      "Review the terms and conditions for using our browser extension marketplace, including rules for submissions, listings, accounts, and community interactions.",
+    alternates: { canonical: await canonicalUrl("/terms") },
+  };
+}
 
 export default function TermsPage() {
   return (

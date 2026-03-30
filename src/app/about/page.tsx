@@ -4,12 +4,14 @@ import { ContentPageHero, ContentPageMain, ContentSection } from "@/components/c
 import { SITE_NAME } from "@/lib/brand";
 import { canonicalUrl } from "@/lib/site-url";
 
-export const metadata: Metadata = {
-  title: "About Us – Browser Extension Marketplace & Community",
-  description:
-    "Learn about our browser extension marketplace where developers submit, list, and promote extensions for Chrome, Firefox, and Edge. Discover our mission to help users find the best tools and creators grow.",
-  alternates: { canonical: canonicalUrl("/about") },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: "About Us – Browser Extension Marketplace & Community",
+    description:
+      "Learn about our browser extension marketplace where developers submit, list, and promote extensions for Chrome, Firefox, and Edge. Discover our mission to help users find the best tools and creators grow.",
+    alternates: { canonical: await canonicalUrl("/about") },
+  };
+}
 
 export default function AboutPage() {
   return (

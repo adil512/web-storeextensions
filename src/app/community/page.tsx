@@ -8,12 +8,14 @@ import { canonicalUrl } from "@/lib/site-url";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Extension Community – Share, Discuss & Discover Browser Extensions",
-  description:
-    "Join the browser extension community to share links, post updates, upvote, and comment on extensions. Connect with developers and users, discover trending tools, and engage around Chrome, Firefox, and Edge extensions.",
-  alternates: { canonical: canonicalUrl("/community") },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: "Extension Community – Share, Discuss & Discover Browser Extensions",
+    description:
+      "Join the browser extension community to share links, post updates, upvote, and comment on extensions. Connect with developers and users, discover trending tools, and engage around Chrome, Firefox, and Edge extensions.",
+    alternates: { canonical: await canonicalUrl("/community") },
+  };
+}
 
 function mapRpcRows(rows: Record<string, unknown>[]): CommunityPostFeedRow[] {
   return rows.map((r) => ({

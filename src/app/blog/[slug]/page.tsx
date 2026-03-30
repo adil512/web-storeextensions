@@ -60,7 +60,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const title = post.meta_title?.trim() || `${post.title} · Blog · ${SITE_NAME}`;
   const description = post.meta_description?.trim() || post.excerpt || `Read ${post.title} on ${SITE_NAME}.`;
-  const canonical = resolveBlogCanonical(post.canonical_url, `/blog/${post.slug}`);
+  const canonical = await resolveBlogCanonical(post.canonical_url, `/blog/${post.slug}`);
 
   return {
     title,
@@ -81,7 +81,7 @@ export default async function BlogPostPage({ params }: Props) {
 
   const readMin = estimateReadMinutes(post.body);
   const toc = extractTocFromMarkdown(post.body);
-  const canonical = resolveBlogCanonical(post.canonical_url, `/blog/${post.slug}`);
+  const canonical = await resolveBlogCanonical(post.canonical_url, `/blog/${post.slug}`);
 
   const jsonLd = {
     "@context": "https://schema.org",

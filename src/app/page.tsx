@@ -27,7 +27,7 @@ export async function generateMetadata({
     title: "Submit Your Browser Extension & Get Users – Chrome, Firefox Extension Marketplace",
     description:
       "List your browser extensions free and reach more users for free. Our extension marketplace lets developers submit, manage listings, and showcase Chrome, Firefox, and Edge extensions to a growing audience.",
-    alternates: { canonical: canonicalUrl(canonicalPath) },
+    alternates: { canonical: await canonicalUrl(canonicalPath) },
   };
 }
 

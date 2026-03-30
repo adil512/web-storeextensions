@@ -5,7 +5,7 @@ import { ScrollToTop } from "@/components/scroll-to-top";
 import SiteHeader from "@/components/site-header";
 import SiteFooter from "@/components/site-footer";
 import { SITE_NAME } from "@/lib/brand";
-import { siteOrigin } from "@/lib/site-url";
+import { publicSiteOrigin } from "@/lib/site-url";
 
 export const dynamic = "force-dynamic";
 
@@ -19,11 +19,14 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteOrigin()),
-  title: `${SITE_NAME} — Browser extension directory`,
-  description: "Web Store Extensions — submit and discover browser extensions with community moderation.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const origin = await publicSiteOrigin();
+  return {
+    metadataBase: new URL(origin),
+    title: `${SITE_NAME} — Browser extension directory`,
+    description: "Web Store Extensions — submit and discover browser extensions with community moderation.",
+  };
+}
 
 export default function RootLayout({
   children,

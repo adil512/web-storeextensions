@@ -63,7 +63,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${row.name} · ${SITE_NAME}`,
     description: `View ${row.name} in our moderated browser extension directory.`,
-    alternates: { canonical: canonicalUrl(extensionListingHref(row)) },
+    alternates: { canonical: await canonicalUrl(extensionListingHref(row)) },
   };
 }
 

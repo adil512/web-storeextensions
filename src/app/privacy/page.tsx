@@ -4,12 +4,14 @@ import { ContentPageHero, ContentPageMain, ContentSection } from "@/components/c
 import { SITE_NAME } from "@/lib/brand";
 import { canonicalUrl } from "@/lib/site-url";
 
-export const metadata: Metadata = {
-  title: "Browser Extension Marketplace",
-  description:
-    "Read our privacy policy to understand how we collect, use, and protect your data when you use our browser extension marketplace, including account and listing information.",
-  alternates: { canonical: canonicalUrl("/privacy") },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: "Browser Extension Marketplace",
+    description:
+      "Read our privacy policy to understand how we collect, use, and protect your data when you use our browser extension marketplace, including account and listing information.",
+    alternates: { canonical: await canonicalUrl("/privacy") },
+  };
+}
 
 export default function PrivacyPage() {
   return (

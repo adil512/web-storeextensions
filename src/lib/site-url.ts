@@ -33,9 +33,12 @@ export async function publicSiteOrigin(): Promise<string> {
   return siteOrigin();
 }
 
-/** Absolute canonical URL. Pass path including query when needed (e.g. `/?page=2`). */
-export function canonicalUrl(path: string): string {
-  const origin = siteOrigin();
+/**
+ * Absolute canonical URL for the current request (custom domain or NEXT_PUBLIC_SITE_URL).
+ * Use in generateMetadata / server components; pass path including query when needed (e.g. `/?page=2`).
+ */
+export async function canonicalUrl(path: string): Promise<string> {
+  const origin = (await publicSiteOrigin()).replace(/\/$/, "");
   if (!path || path === "/") return `${origin}/`;
   const normalized = path.startsWith("/") ? path : `/${path}`;
   return `${origin}${normalized}`;
