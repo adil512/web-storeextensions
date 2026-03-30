@@ -1,11 +1,11 @@
 import type { MetadataRoute } from "next";
-import { siteOrigin } from "@/lib/site-url";
+import { publicSiteOrigin } from "@/lib/site-url";
 
-/** Cached; update when you change disallow rules. */
-export const revalidate = 86400;
+/** Per-request so sitemap URL uses the visitor’s host (custom domain), not a baked *.vercel.app URL. */
+export const dynamic = "force-dynamic";
 
-export default function robots(): MetadataRoute.Robots {
-  const base = siteOrigin();
+export default async function robots(): Promise<MetadataRoute.Robots> {
+  const base = await publicSiteOrigin();
   return {
     rules: [
       {

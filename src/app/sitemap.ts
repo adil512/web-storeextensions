@@ -3,7 +3,7 @@ import { categoryHref } from "@/lib/category-slugs";
 import { CATEGORIES } from "@/lib/constants/listing";
 import { hasSupabaseEnv } from "@/lib/supabase/env";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { siteOrigin } from "@/lib/site-url";
+import { publicSiteOrigin } from "@/lib/site-url";
 import { getAllToolSlugs } from "@/lib/tools-registry";
 
 export const revalidate = 3600;
@@ -31,19 +31,20 @@ const STATIC_PATHS: { path: string; changeFrequency: MetadataRoute.Sitemap[0]["c
   { path: "/products/personal-life", changeFrequency: "monthly", priority: 0.5 },
 ];
 
-function absoluteUrl(path: string): string {
-  const base = siteOrigin().replace(/\/$/, "");
+function absoluteUrl(base: string, path: string): string {
+  const root = base.replace(/\/$/, "");
   const p = path.startsWith("/") ? path : `/${path}`;
-  return `${base}${p}`;
+  return `${root}${p}`;
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const base = await publicSiteOrigin();
   const now = new Date();
   const entries: MetadataRoute.Sitemap = [];
 
   for (const { path, changeFrequency, priority } of STATIC_PATHS) {
     entries.push({
-      url: absoluteUrl(path),
+      url: absoluteUrl(base, path),
       lastModified: now,
       changeFrequency,
       priority,
@@ -52,7 +53,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   for (const cat of CATEGORIES) {
     entries.push({
-      url: absoluteUrl(categoryHref(cat)),
+      url: absoluteUrl(base, categoryHref(cat)),
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.75,
@@ -61,7 +62,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   for (const slug of getAllToolSlugs()) {
     entries.push({
-      url: absoluteUrl(`/extension-tools/${slug}`),
+      url: absoluteUrl(base, `/extension-tools/${slug}`),
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.65,
@@ -80,7 +81,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       const s = typeof row.slug === "string" ? row.slug.trim() : "";
       if (!s) continue;
       entries.push({
-        url: absoluteUrl(`/extensions/${s}`),
+        url: absoluteUrl(base, `/extensions/${s}`),
         lastModified: row.updated_at ? new Date(row.updated_at) : now,
         changeFrequency: "weekly",
         priority: 0.85,
@@ -93,7 +94,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       const s = typeof row.slug === "string" ? row.slug.trim() : "";
       if (!s) continue;
       entries.push({
-        url: absoluteUrl(`/blog/${s}`),
+        url: absoluteUrl(base, `/blog/${s}`),
         lastModified: row.updated_at ? new Date(row.updated_at) : now,
         changeFrequency: "weekly",
         priority: 0.8,
