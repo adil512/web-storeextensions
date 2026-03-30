@@ -2,12 +2,14 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { createClient } from "@supabase/supabase-js";
 import { CATEGORIES, isValidStorePlatform, parseStorePlatform } from "@/lib/constants/listing";
 import { isValidExtensionId, normalizeExtensionId } from "@/lib/extension-id";
 import { allocateListingSlug } from "@/lib/listing-slug";
 import { snapshotFromListingRow } from "@/lib/listing-snapshot";
 import { slugifyBlogInput } from "@/lib/blog-slug";
 import { isAdminRole, isSuperAdminRole } from "@/lib/profile-role";
+import { getSupabaseServiceRoleEnv } from "@/lib/supabase/env";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 const ADMIN_TABS = new Set([
@@ -188,6 +190,93 @@ export async function adminUpdateListing(formData: FormData) {
       slug: nextSlug,
     })
     .eq("id", id);
+
+  const ownerIdForm = String(formData.get("ownerId") ?? "").trim();
+  const ownerEmailNew = String(formData.get("ownerEmail") ?? "").trim();
+  const ownerUsernameRaw = String(formData.get("ownerUsername") ?? "");
+  const listingOwnerId = (current as { owner_id?: string | null }).owner_id ?? null;
+
+  if (ownerIdForm && listingOwnerId && ownerIdForm === listingOwnerId) {
+    if (!ownerEmailNew) {
+      redirect(
+        `/admin?tab=catalog&catalogError=${encodeURIComponent("Owner email is required when editing account fields.")}`,
+      );
+    }
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRe.test(ownerEmailNew)) {
+      redirect(`/admin?tab=catalog&catalogError=${encodeURIComponent("Invalid owner email address.")}`);
+    }
+    const ownerUsernameNorm = ownerUsernameRaw.trim().toLowerCase() || null;
+    if (ownerUsernameNorm && (ownerUsernameNorm.length < 2 || ownerUsernameNorm.length > 39)) {
+      redirect(
+        `/admin?tab=catalog&catalogError=${encodeURIComponent("Username must be 2–39 characters, or leave empty.")}`,
+      );
+    }
+    if (ownerUsernameNorm && !/^[a-z0-9][a-z0-9_-]*$/.test(ownerUsernameNorm)) {
+      redirect(
+        `/admin?tab=catalog&catalogError=${encodeURIComponent("Username may only use lowercase letters, digits, underscores, and hyphens.")}`,
+      );
+    }
+
+    try {
+      const { supabaseUrl, supabaseServiceRoleKey } = getSupabaseServiceRoleEnv();
+      const adminClient = createClient(supabaseUrl, supabaseServiceRoleKey, {
+        auth: { persistSession: false, autoRefreshToken: false },
+      });
+
+      const { data: prevProfile, error: prevErr } = await adminClient
+        .from("profiles")
+        .select("email, username")
+        .eq("id", ownerIdForm)
+        .maybeSingle();
+
+      if (prevErr || !prevProfile) {
+        redirect(
+          `/admin?tab=catalog&catalogError=${encodeURIComponent(prevErr?.message || "Could not load owner profile.")}`,
+        );
+      }
+
+      const prevEmail = String(prevProfile.email ?? "").trim();
+      const prevUser = (prevProfile.username ? String(prevProfile.username).trim().toLowerCase() : null) as string | null;
+      const emailChanged = ownerEmailNew !== prevEmail;
+      const usernameChanged = ownerUsernameNorm !== prevUser;
+
+      if (emailChanged) {
+        const { error: authErr } = await adminClient.auth.admin.updateUserById(ownerIdForm, {
+          email: ownerEmailNew,
+          email_confirm: true,
+        });
+        if (authErr) {
+          redirect(`/admin?tab=catalog&catalogError=${encodeURIComponent(authErr.message)}`);
+        }
+      }
+
+      if (emailChanged || usernameChanged) {
+        const { error: profErr } = await adminClient
+          .from("profiles")
+          .update({
+            email: ownerEmailNew,
+            username: ownerUsernameNorm,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", ownerIdForm);
+        if (profErr) {
+          redirect(`/admin?tab=catalog&catalogError=${encodeURIComponent(profErr.message)}`);
+        }
+        revalidatePath("/u", "layout");
+      }
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      if (msg.includes("SUPABASE_SERVICE_ROLE_KEY") || msg.includes("NEXT_PUBLIC_SUPABASE_URL")) {
+        redirect(
+          `/admin?tab=catalog&catalogError=${encodeURIComponent(
+            "Set SUPABASE_SERVICE_ROLE_KEY on the server to update owner email or username from this form.",
+          )}`,
+        );
+      }
+      throw e;
+    }
+  }
 
   revalidatePath("/admin");
   revalidatePath("/");

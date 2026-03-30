@@ -38,6 +38,7 @@ export default async function AdminPage({
     blogError?: string;
     commentNotice?: "approved" | "rejected" | "updated" | "deleted" | string;
     commentError?: string;
+    catalogError?: string;
   }>;
 }) {
   const sp = await searchParams;
@@ -81,7 +82,9 @@ export default async function AdminPage({
                     ? ({ kind: "error" as const, message: sp.commentError.trim() })
                     : typeof sp.deleteError === "string" && sp.deleteError.trim()
                       ? ({ kind: "error" as const, message: sp.deleteError.trim() })
-                      : null;
+                      : typeof sp.catalogError === "string" && sp.catalogError.trim()
+                        ? ({ kind: "error" as const, message: sp.catalogError.trim() })
+                        : null;
 
   const [
     pendingRes,

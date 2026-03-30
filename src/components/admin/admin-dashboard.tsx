@@ -980,6 +980,7 @@ export default function AdminDashboard({
                       <form action={adminUpdateListing} className="space-y-4">
                         <input type="hidden" name="id" value={row.id} />
                         <input type="hidden" name="_tab" value="catalog" />
+                        <input type="hidden" name="ownerId" value={row.owner_id ?? ""} />
                         <div className="grid gap-4 lg:grid-cols-2">
                           <div>
                             <label className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Title</label>
@@ -1033,6 +1034,25 @@ export default function AdminDashboard({
                                 </option>
                               ))}
                             </select>
+                          </div>
+                          <div>
+                            <label className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Owner username</label>
+                            <input
+                              name="ownerUsername"
+                              defaultValue={(Array.isArray(row.profiles) ? row.profiles[0]?.username : row.profiles?.username) ?? ""}
+                              placeholder="lowercase username or empty"
+                              className="mt-1.5 w-full rounded-xl border border-zinc-300 px-3 py-2.5 text-sm outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-500/20"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Owner email</label>
+                            <input
+                              name="ownerEmail"
+                              type="email"
+                              defaultValue={(Array.isArray(row.profiles) ? row.profiles[0]?.email : row.profiles?.email) ?? ""}
+                              required
+                              className="mt-1.5 w-full rounded-xl border border-zinc-300 px-3 py-2.5 text-sm outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-500/20"
+                            />
                           </div>
                         </div>
                         <div>
