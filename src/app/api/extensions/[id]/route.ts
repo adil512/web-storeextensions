@@ -125,6 +125,8 @@ export async function PATCH(request: Request, ctx: RouteCtx) {
     homepage_url: body.homepageUrl != null ? String(body.homepageUrl).trim() || null : row.homepage_url,
     store_url: body.storeUrl != null ? String(body.storeUrl).trim() || null : row.store_url,
     logo_url: body.logoUrl != null ? String(body.logoUrl).trim() || null : row.logo_url,
+    listing_country:
+      body.primaryCountry != null ? String(body.primaryCountry).trim() || null : (row.listing_country ?? null),
     languages: Array.isArray(body.languages) ? body.languages : row.languages,
     users_by_region:
       body.usersByRegion && typeof body.usersByRegion === "object" ? body.usersByRegion : row.users_by_region,

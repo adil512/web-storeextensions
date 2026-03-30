@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { ExtensionCommentsSection, type PublicListingComment } from "@/components/extension-comments-section";
 import { ReportListingButton, ExtensionViewTracker, TrackedStoreLink } from "@/components/extension-public-actions";
 import { ListingUpvote } from "@/components/listing-upvote";
@@ -14,6 +16,13 @@ import { trustScoreFromListingCount } from "@/lib/trust-score";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type Props = { params: Promise<{ slug: string }> };
+
+function installButtonLabel(platform: ReturnType<typeof parseStorePlatform>) {
+  if (platform === "mozilla") return "Install on Firefox Add-ons";
+  if (platform === "edge") return "Install on Edge Add-ons";
+  if (platform === "other") return "Install extension";
+  return "Install on Chrome Web Store";
+}
 
 /** Row shape for this page’s listing query (slug optional until migration backfill). */
 type ExtensionListingPageRow = {
@@ -159,6 +168,7 @@ export default async function ExtensionDetailPage({ params }: Props) {
     (listing as { store_platform?: string | null }).store_platform,
   );
   const platformLabel = STORE_PLATFORM_LABELS[storePlatform];
+  const installLabel = installButtonLabel(storePlatform);
 
   return (
     <div className="min-h-[50vh] bg-gradient-to-b from-zinc-100/60 to-zinc-50">
@@ -192,7 +202,27 @@ export default async function ExtensionDetailPage({ params }: Props) {
           </div>
 
           <div className="space-y-6 px-6 py-8 sm:px-8">
-            <p className="text-base leading-relaxed text-zinc-700">{listing.description}</p>
+            <div className="space-y-4 text-zinc-700">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  h1: (props) => <h2 className="text-2xl font-black tracking-tight text-zinc-900" {...props} />,
+                  h2: (props) => <h3 className="text-xl font-bold tracking-tight text-zinc-900" {...props} />,
+                  h3: (props) => <h4 className="text-lg font-semibold text-zinc-900" {...props} />,
+                  p: (props) => <p className="text-base leading-relaxed" {...props} />,
+                  ul: (props) => <ul className="list-disc space-y-1 pl-6 text-base leading-relaxed" {...props} />,
+                  ol: (props) => <ol className="list-decimal space-y-1 pl-6 text-base leading-relaxed" {...props} />,
+                  li: (props) => <li className="leading-relaxed" {...props} />,
+                  blockquote: (props) => (
+                    <blockquote className="border-l-4 border-zinc-200 pl-4 italic text-zinc-600" {...props} />
+                  ),
+                  a: (props) => <a className="font-medium text-orange-600 underline hover:text-orange-700" {...props} />,
+                  code: (props) => <code className="rounded bg-zinc-100 px-1 py-0.5 text-[0.95em]" {...props} />,
+                }}
+              >
+                {listing.description}
+              </ReactMarkdown>
+            </div>
 
             <div className="grid gap-3 rounded-2xl border border-zinc-100 bg-zinc-50/80 p-4 text-sm sm:grid-cols-2">
               <div>
@@ -231,7 +261,7 @@ export default async function ExtensionDetailPage({ params }: Props) {
                 href={listing.store_url}
                 className="flex w-full items-center justify-center rounded-2xl bg-gradient-to-b from-orange-500 to-orange-600 px-6 py-4 text-sm font-semibold text-white shadow-md shadow-orange-500/25 transition hover:from-orange-600 hover:to-orange-700 sm:inline-flex sm:w-auto"
               >
-                Install on Chrome Web Store
+                {installLabel}
               </TrackedStoreLink>
             ) : null}
 

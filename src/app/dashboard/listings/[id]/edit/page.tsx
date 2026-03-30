@@ -1,11 +1,10 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
-import { CATEGORIES, LANGUAGES, REGIONS, STORE_PLATFORM_OPTIONS, parseStorePlatform } from "@/lib/constants/listing";
-import { countWords, MIN_LISTING_DESCRIPTION_WORDS } from "@/lib/word-count";
+import { CATEGORIES, LANGUAGES, STORE_PLATFORM_OPTIONS, parseStorePlatform } from "@/lib/constants/listing";
 
 type Listing = {
   id: string;
@@ -17,6 +16,7 @@ type Listing = {
   uninstalls_last_30_days: number;
   users_by_region: Record<string, number>;
   languages: string[];
+  listing_country?: string | null;
   homepage_url: string | null;
   store_url: string | null;
   logo_url: string | null;
@@ -35,9 +35,8 @@ export default function EditPendingListingPage() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
-  const [regionInputs, setRegionInputs] = useState<Record<string, number>>({});
+  const [primaryCountry, setPrimaryCountry] = useState("");
   const [description, setDescription] = useState("");
-  const descWords = useMemo(() => countWords(description), [description]);
 
   useEffect(() => {
     const run = async () => {
@@ -57,7 +56,7 @@ export default function EditPendingListingPage() {
       setListing(l);
       setDescription(l.description || "");
       setSelectedLanguages(l.languages || []);
-      setRegionInputs((l.users_by_region as Record<string, number>) || {});
+      setPrimaryCountry(l.listing_country ?? "");
       setLoading(false);
     };
     void run();
@@ -72,14 +71,6 @@ export default function EditPendingListingPage() {
     if (!listing) return;
     setSaving(true);
     setMessage("");
-    if (descWords < MIN_LISTING_DESCRIPTION_WORDS) {
-      setSaving(false);
-      setMessage(
-        `Description must be at least ${MIN_LISTING_DESCRIPTION_WORDS} words (you have ${descWords}).`,
-      );
-      return;
-    }
-
     const formData = new FormData(event.currentTarget);
     const body = {
       name: formData.get("name"),
@@ -92,7 +83,7 @@ export default function EditPendingListingPage() {
       homepageUrl: formData.get("homepageUrl"),
       storeUrl: formData.get("storeUrl"),
       logoUrl: formData.get("logoUrl"),
-      usersByRegion: regionInputs,
+      primaryCountry,
       languages: selectedLanguages,
       requestFeaturedPlacement: formData.get("requestFeaturedPlacement") === "on",
     };
@@ -166,13 +157,10 @@ export default function EditPendingListingPage() {
             required
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder={`At least ${MIN_LISTING_DESCRIPTION_WORDS} words`}
+            placeholder="Describe what it does, who it is for, and key privacy/permission notes."
             rows={14}
             className="mt-1 min-h-[12rem] w-full rounded-xl border border-zinc-300 px-4 py-3 text-sm"
           />
-          <p className={`mt-1 text-xs ${descWords >= MIN_LISTING_DESCRIPTION_WORDS ? "text-emerald-700" : "text-zinc-600"}`}>
-            <span className="font-semibold tabular-nums">{descWords}</span> / {MIN_LISTING_DESCRIPTION_WORDS} words minimum
-          </p>
         </div>
         <select name="category" required defaultValue={listing.category} className="w-full rounded-xl border border-zinc-300 px-4 py-3 text-sm">
           {!CATEGORIES.includes(listing.category as (typeof CATEGORIES)[number]) ? (
@@ -232,24 +220,16 @@ export default function EditPendingListingPage() {
             className="w-full rounded-xl border border-zinc-300 px-4 py-3 text-sm"
           />
         </div>
-        <div className="grid gap-3 rounded-xl border border-zinc-200 p-4 sm:grid-cols-2">
-          {REGIONS.map((region) => (
-            <label key={region} className="text-sm text-zinc-700">
-              {region}
-              <input
-                type="number"
-                min={0}
-                className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm"
-                defaultValue={regionInputs[region] ?? 0}
-                onChange={(event) =>
-                  setRegionInputs((prev) => ({
-                    ...prev,
-                    [region]: Number(event.target.value || 0),
-                  }))
-                }
-              />
-            </label>
-          ))}
+        <div>
+          <label className="text-sm font-semibold text-zinc-800">Primary country (most users)</label>
+          <input
+            name="primaryCountry"
+            required
+            value={primaryCountry}
+            onChange={(e) => setPrimaryCountry(e.target.value)}
+            placeholder="e.g. United States"
+            className="mt-1 w-full rounded-xl border border-zinc-300 px-4 py-3 text-sm"
+          />
         </div>
         <div className="rounded-xl border border-zinc-200 p-4">
           <p className="text-sm font-semibold text-zinc-900">Main Languages</p>
