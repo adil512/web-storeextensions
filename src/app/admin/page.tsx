@@ -198,11 +198,31 @@ export default async function AdminPage({
     dupSameIdRejected: rejectedExtSet.has(p.extension_id),
   }));
 
-  const catalog = [
+  const catalogRaw = [
     ...(catalogPendingRes.data ?? []),
     ...(catalogApprovedRes.data ?? []),
     ...(catalogRejectedRes.data ?? []),
   ].sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()) as AdminCatalogRow[];
+
+  const catalogIds = catalogRaw.map((c) => c.id);
+  const badgeByListing = new Map<string, string[]>();
+  if (catalogIds.length > 0) {
+    const { data: badgeRows } = await supabase
+      .from("listing_verification_badges")
+      .select("listing_id, badge_key")
+      .in("listing_id", catalogIds);
+    for (const br of badgeRows ?? []) {
+      const lid = String((br as { listing_id: string }).listing_id);
+      const key = String((br as { badge_key: string }).badge_key);
+      const arr = badgeByListing.get(lid) ?? [];
+      arr.push(key);
+      badgeByListing.set(lid, arr);
+    }
+  }
+  const catalog: AdminCatalogRow[] = catalogRaw.map((row) => ({
+    ...row,
+    verification_badges: badgeByListing.get(row.id) ?? [],
+  }));
 
   const stats = {
     pending: pendingCountRes.count ?? 0,

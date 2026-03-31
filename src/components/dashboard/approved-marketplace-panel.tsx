@@ -83,7 +83,8 @@ export function ApprovedMarketplacePanel({
             <Link href="/account" className="font-semibold underline hover:text-orange-950">
               public profile
             </Link>{" "}
-            (set a username plus website or social links) or through listing comments.
+            (set a username plus website or social links), through listing comments, or the private inquiry form on your public
+            page (buyers see it in Dashboard → Inquiries).
           </p>
         </div>
         <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-orange-200/80 bg-white/80 px-3 py-2 shadow-sm">

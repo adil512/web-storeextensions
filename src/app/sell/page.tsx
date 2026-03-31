@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { VerificationBadgeRow } from "@/components/marketplace/verification-badge-row";
 import { SellHero } from "@/components/sell/sell-hero";
 import { ListingUpvote } from "@/components/listing-upvote";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -78,6 +79,21 @@ export default async function SellPage() {
     .order("updated_at", { ascending: false });
 
   const listings = (rows ?? []) as Row[];
+  const listingIds = listings.map((l) => l.id);
+  const badgeByListing = new Map<string, string[]>();
+  if (listingIds.length > 0) {
+    const { data: badgeRows } = await supabase
+      .from("listing_verification_badges")
+      .select("listing_id, badge_key")
+      .in("listing_id", listingIds);
+    for (const br of badgeRows ?? []) {
+      const lid = String((br as { listing_id: string }).listing_id);
+      const bk = String((br as { badge_key: string }).badge_key);
+      const arr = badgeByListing.get(lid) ?? [];
+      arr.push(bk);
+      badgeByListing.set(lid, arr);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -117,6 +133,7 @@ export default async function SellPage() {
             {listings.map((ext) => {
               const labelCat = ext.category;
               const maker = makerProfileBits(ext);
+              const badgeKeys = badgeByListing.get(ext.id) ?? [];
               return (
                 <li
                   key={ext.id}
@@ -140,6 +157,11 @@ export default async function SellPage() {
                         </h3>
                         {ext.description ? (
                           <p className="mt-1 line-clamp-2 text-sm text-zinc-600">{ext.description}</p>
+                        ) : null}
+                        {badgeKeys.length > 0 ? (
+                          <div className="mt-2">
+                            <VerificationBadgeRow badgeKeys={badgeKeys} />
+                          </div>
                         ) : null}
                       </div>
                     </div>
@@ -186,6 +208,12 @@ export default async function SellPage() {
                         Contact site
                       </Link>
                     )}
+                    <Link
+                      href={`/extensions/${ext.slug}#listing-inquiry`}
+                      className="rounded-xl border border-orange-200 bg-orange-50 px-4 py-2 text-xs font-bold text-orange-900 transition hover:border-orange-300"
+                    >
+                      Inquire
+                    </Link>
                     <Link
                       href={`/extensions/${ext.slug}`}
                       className="ml-auto rounded-xl border border-zinc-200 bg-white px-4 py-2 text-xs font-bold text-zinc-800 transition hover:border-orange-200 hover:text-orange-800"

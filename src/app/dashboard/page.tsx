@@ -42,6 +42,12 @@ export default async function DashboardPage() {
           >
             Submit Extension
           </Link>
+          <Link
+            href="/dashboard/inquiries"
+            className="rounded-xl border border-zinc-300 px-4 py-2 text-sm font-semibold text-zinc-800"
+          >
+            Inquiries
+          </Link>
         </div>
       </div>
 

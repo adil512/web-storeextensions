@@ -20,6 +20,7 @@ import { AdminBlogCommentDeleteForm } from "@/components/admin/admin-blog-commen
 import { BlogBodyEditor } from "@/components/admin/blog-body-editor";
 import { SITE_NAME } from "@/lib/brand";
 import { CATEGORIES, STORE_PLATFORM_OPTIONS, parseStorePlatform } from "@/lib/constants/listing";
+import { VERIFICATION_BADGE_KEYS, VERIFICATION_BADGE_LABELS } from "@/lib/verification-badges";
 import { extensionListingHref } from "@/lib/listing-slug";
 
 export type AdminStats = {
@@ -90,6 +91,7 @@ export type AdminCatalogRow = {
   updated_at: string;
   is_platform_curated?: boolean | null;
   profiles: AdminPendingRow["profiles"];
+  verification_badges?: string[];
 };
 
 export type AdminAnalyticsRow = {
@@ -1103,6 +1105,27 @@ export default function AdminDashboard({
                               override here.
                             </span>
                           </label>
+                        </div>
+                        <div className="rounded-xl border border-violet-200/80 bg-violet-50/50 p-4">
+                          <p className="text-xs font-semibold uppercase tracking-wide text-violet-900">
+                            Manual verification badges
+                          </p>
+                          <p className="mt-1 text-xs text-violet-900/85">
+                            Shown on the public extension page. Only grant after your internal review.
+                          </p>
+                          <div className="mt-3 flex flex-col gap-2">
+                            {VERIFICATION_BADGE_KEYS.map((key) => (
+                              <label key={key} className="flex cursor-pointer items-start gap-2 text-sm text-violet-950">
+                                <input
+                                  type="checkbox"
+                                  name={`badge_${key}`}
+                                  defaultChecked={row.verification_badges?.includes(key)}
+                                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-violet-300 text-violet-700"
+                                />
+                                <span>{VERIFICATION_BADGE_LABELS[key]}</span>
+                              </label>
+                            ))}
+                          </div>
                         </div>
                         <button
                           type="submit"

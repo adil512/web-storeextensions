@@ -9,6 +9,7 @@ import { allocateListingSlug } from "@/lib/listing-slug";
 import { snapshotFromListingRow } from "@/lib/listing-snapshot";
 import { slugifyBlogInput } from "@/lib/blog-slug";
 import { isAdminRole, isSuperAdminRole } from "@/lib/profile-role";
+import { VERIFICATION_BADGE_KEYS } from "@/lib/verification-badges";
 import { getSupabaseServiceRoleEnv } from "@/lib/supabase/env";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -200,6 +201,20 @@ export async function adminUpdateListing(formData: FormData) {
     .eq("id", id);
   if (listingUpdateErr) {
     redirect(`/admin?tab=catalog&catalogError=${encodeURIComponent(listingUpdateErr.message)}`);
+  }
+
+  const badgeKeys = VERIFICATION_BADGE_KEYS.filter((k) => String(formData.get(`badge_${k}`) ?? "") === "on");
+  const { error: delBadgesErr } = await supabase.from("listing_verification_badges").delete().eq("listing_id", id);
+  if (delBadgesErr) {
+    redirect(`/admin?tab=catalog&catalogError=${encodeURIComponent(delBadgesErr.message)}`);
+  }
+  if (badgeKeys.length > 0) {
+    const { error: insBadgesErr } = await supabase.from("listing_verification_badges").insert(
+      badgeKeys.map((badge_key) => ({ listing_id: id, badge_key, granted_by: user.id })),
+    );
+    if (insBadgesErr) {
+      redirect(`/admin?tab=catalog&catalogError=${encodeURIComponent(insBadgesErr.message)}`);
+    }
   }
 
   const ownerIdForm = String(formData.get("ownerId") ?? "").trim();

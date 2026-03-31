@@ -5,6 +5,8 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { ExtensionCommentsSection, type PublicListingComment } from "@/components/extension-comments-section";
 import { ReportListingButton, ExtensionViewTracker, TrackedStoreLink } from "@/components/extension-public-actions";
+import { ListingInquiryForm } from "@/components/marketplace/listing-inquiry-form";
+import { VerificationBadgeRow } from "@/components/marketplace/verification-badge-row";
 import { ListingUpvote } from "@/components/listing-upvote";
 import { MakerTrustScoreCard } from "@/components/maker-trust-score";
 import { SITE_NAME } from "@/lib/brand";
@@ -114,6 +116,14 @@ export default async function ExtensionDetailPage({ params }: Props) {
 
   const id = listing.id as string;
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const isOwner = Boolean(user && listing.owner_id && listing.owner_id === user.id);
+
+  const { data: badgeRows } = await supabase.from("listing_verification_badges").select("badge_key").eq("listing_id", id);
+  const verificationBadgeKeys = (badgeRows ?? []).map((r: { badge_key: string }) => r.badge_key);
+
   const { data: commentRows, error: commentsErr } = await supabase
     .from("listing_comments")
     .select("id,body,created_at,profiles(username)")
@@ -193,6 +203,11 @@ export default async function ExtensionDetailPage({ params }: Props) {
             </Link>
             <h1 className="mt-2 text-2xl font-black tracking-tight text-zinc-950 sm:text-3xl">{listing.name}</h1>
             <p className="mt-2 text-sm text-zinc-600">{attribution}</p>
+            {verificationBadgeKeys.length > 0 ? (
+              <div className="mt-3">
+                <VerificationBadgeRow badgeKeys={verificationBadgeKeys} />
+              </div>
+            ) : null}
 
             <div className="mt-4">
               {isCurated ? (
@@ -249,6 +264,19 @@ export default async function ExtensionDetailPage({ params }: Props) {
                     Browse Sell
                   </Link>
                 </div>
+                {!isOwner ? (
+                  <div className="mt-5 border-t border-emerald-100/80 pt-5">
+                    <ListingInquiryForm listingId={id} />
+                  </div>
+                ) : (
+                  <p className="mt-5 border-t border-emerald-100/80 pt-5 text-xs text-emerald-900/85">
+                    Buyer inquiries appear in your{" "}
+                    <Link href="/dashboard/inquiries" className="font-semibold underline">
+                      Dashboard → Inquiries
+                    </Link>
+                    .
+                  </p>
+                )}
               </aside>
             ) : null}
             <div className="space-y-4 text-zinc-700">
