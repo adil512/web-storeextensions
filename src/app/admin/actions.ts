@@ -176,13 +176,16 @@ export async function adminUpdateListing(formData: FormData) {
 
   const listed_for_sale = String(formData.get("listedForSale") ?? "") === "on";
 
-  await supabase.from("listing_versions").insert({
+  const { error: versionErr } = await supabase.from("listing_versions").insert({
     listing_id: id,
     editor_id: user.id,
     snapshot: snapshotFromListingRow(current as Record<string, unknown>),
   });
+  if (versionErr) {
+    redirect(`/admin?tab=catalog&catalogError=${encodeURIComponent(versionErr.message)}`);
+  }
 
-  await supabase
+  const { error: listingUpdateErr } = await supabase
     .from("extension_listings")
     .update({
       name,
@@ -195,6 +198,9 @@ export async function adminUpdateListing(formData: FormData) {
       listed_for_sale,
     })
     .eq("id", id);
+  if (listingUpdateErr) {
+    redirect(`/admin?tab=catalog&catalogError=${encodeURIComponent(listingUpdateErr.message)}`);
+  }
 
   const ownerIdForm = String(formData.get("ownerId") ?? "").trim();
   const ownerEmailNew = String(formData.get("ownerEmail") ?? "").trim();
@@ -288,10 +294,10 @@ export async function adminUpdateListing(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/sell");
   await revalidateExtensionListingPages(supabase, id);
-  if (ownerUpdated) {
-    redirect(`/admin?tab=catalog&catalogNotice=${encodeURIComponent("Owner updated successfully.")}`);
-  }
-  adminRedirectTab(formData, "catalog");
+  const successNotice = ownerUpdated
+    ? "Owner updated successfully. Listing changes saved."
+    : "Listing changes saved successfully.";
+  redirect(`/admin?tab=catalog&catalogNotice=${encodeURIComponent(successNotice)}`);
 }
 
 export async function updateReportStatus(formData: FormData) {
