@@ -60,6 +60,7 @@ export async function POST(request: Request) {
   }
   const store_platform = parseStorePlatform(body.storePlatform);
   const featured_placement_requested = body.requestFeaturedPlacement === true || body.requestFeaturedPlacement === "true";
+  const listed_for_sale = body.listedForSale === true || body.listedForSale === "true";
   const nameTrimmed = String(body.name ?? "").trim();
   const primaryCountry = String(body.primaryCountry ?? "").trim();
   const slug = await allocateListingSlug(supabase, nameTrimmed);
@@ -84,6 +85,7 @@ export async function POST(request: Request) {
     listing_region: geo.listing_region,
     listing_city: geo.listing_city,
     featured_placement_requested,
+    listed_for_sale,
   };
 
   const { data: inserted, error } = await supabase.from("extension_listings").insert(payload).select("id").single();

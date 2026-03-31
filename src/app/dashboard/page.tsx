@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { SITE_NAME } from "@/lib/brand";
+import { ApprovedMarketplacePanel } from "@/components/dashboard/approved-marketplace-panel";
 import { extensionListingHref } from "@/lib/listing-slug";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -78,6 +79,15 @@ export default async function DashboardPage() {
                 ) : null}
               </div>
             </div>
+            {listing.status === "approved" ? (
+              <ApprovedMarketplacePanel
+                listingId={listing.id}
+                slug={String((listing as { slug?: string | null }).slug ?? "")}
+                initialListedForSale={Boolean((listing as { listed_for_sale?: boolean }).listed_for_sale)}
+                initialCurrentUsers={(listing as { current_users?: number | null }).current_users ?? null}
+                initialPrimaryCountry={(listing as { listing_country?: string | null }).listing_country ?? null}
+              />
+            ) : null}
           </div>
         ))}
         {listings?.length === 0 ? (

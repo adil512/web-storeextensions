@@ -107,6 +107,13 @@ export async function PATCH(request: Request, ctx: RouteCtx) {
     );
   }
 
+  let listed_for_sale: boolean;
+  if (body.listedForSale !== undefined && body.listedForSale !== null) {
+    listed_for_sale = body.listedForSale === true || body.listedForSale === "true";
+  } else {
+    listed_for_sale = Boolean((row as { listed_for_sale?: boolean }).listed_for_sale);
+  }
+
   let slug = String((row as { slug?: string }).slug ?? "");
   if (name !== row.name) {
     slug = await allocateListingSlug(supabase, name, id);
@@ -131,6 +138,7 @@ export async function PATCH(request: Request, ctx: RouteCtx) {
     users_by_region:
       body.usersByRegion && typeof body.usersByRegion === "object" ? body.usersByRegion : row.users_by_region,
     featured_placement_requested,
+    listed_for_sale,
     updated_at: new Date().toISOString(),
   };
 

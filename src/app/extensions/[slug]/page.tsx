@@ -132,11 +132,15 @@ export default async function ExtensionDetailPage({ params }: Props) {
       : [];
 
   const owner = Array.isArray(listing.profiles) ? listing.profiles[0] : listing.profiles;
+  const makerUsername =
+    owner && typeof owner === "object" && "username" in owner
+      ? String((owner as { username?: string | null }).username ?? "").trim() || null
+      : null;
   const isCurated = listing.owner_id == null || listing.is_platform_curated === true;
   const attribution = isCurated
     ? `${SITE_NAME} curated pick`
     : owner?.full_name || owner?.username
-      ? `By @${owner?.username || "maker"}`
+      ? `By @${makerUsername || "maker"}`
       : "Community listing";
 
   let makerListingCount = 0;
@@ -169,6 +173,7 @@ export default async function ExtensionDetailPage({ params }: Props) {
   );
   const platformLabel = STORE_PLATFORM_LABELS[storePlatform];
   const installLabel = installButtonLabel(storePlatform);
+  const listedForSale = Boolean((listing as { listed_for_sale?: boolean | null }).listed_for_sale);
 
   return (
     <div className="min-h-[50vh] bg-gradient-to-b from-zinc-100/60 to-zinc-50">
@@ -202,6 +207,50 @@ export default async function ExtensionDetailPage({ params }: Props) {
           </div>
 
           <div className="space-y-6 px-6 py-8 sm:px-8">
+            {listedForSale ? (
+              <aside className="scroll-mt-24 rounded-2xl border border-emerald-200/90 bg-gradient-to-br from-emerald-50 via-white to-teal-50/60 p-5 shadow-sm sm:p-6">
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-800/90">For buyers</p>
+                <h2 className="mt-2 text-lg font-bold tracking-tight text-emerald-950">This extension is listed for acquisition</h2>
+                <p className="mt-2 text-sm leading-relaxed text-emerald-900/85">
+                  The maker opted into our{" "}
+                  <Link href="/sell" className="font-semibold text-emerald-800 underline underline-offset-2 hover:text-emerald-950">
+                    Sell marketplace
+                  </Link>
+                  . You can reach them through their public profile (website and social links), or leave a public comment below
+                  (signing in required to post).
+                </p>
+                <div className="mt-4 flex flex-wrap gap-3">
+                  {!isCurated && makerUsername ? (
+                    <Link
+                      href={`/u/${makerUsername}`}
+                      className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-b from-emerald-600 to-emerald-700 px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-emerald-900/15 transition hover:from-emerald-700 hover:to-emerald-800"
+                    >
+                      Contact maker
+                    </Link>
+                  ) : !isCurated ? (
+                    <Link
+                      href="#listing-comments"
+                      className="inline-flex items-center justify-center rounded-2xl border-2 border-emerald-300 bg-white px-5 py-2.5 text-sm font-bold text-emerald-900 transition hover:border-emerald-400 hover:bg-emerald-50/80"
+                    >
+                      Message via comments
+                    </Link>
+                  ) : (
+                    <Link
+                      href="/contact"
+                      className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-b from-emerald-600 to-emerald-700 px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-emerald-900/15 transition hover:from-emerald-700 hover:to-emerald-800"
+                    >
+                      Contact {SITE_NAME}
+                    </Link>
+                  )}
+                  <Link
+                    href="/sell"
+                    className="inline-flex items-center justify-center rounded-2xl border border-emerald-200 bg-white px-5 py-2.5 text-sm font-semibold text-emerald-900 transition hover:border-emerald-300 hover:bg-emerald-50/80"
+                  >
+                    Browse Sell
+                  </Link>
+                </div>
+              </aside>
+            ) : null}
             <div className="space-y-4 text-zinc-700">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}

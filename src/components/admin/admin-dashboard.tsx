@@ -81,6 +81,7 @@ export type AdminCatalogRow = {
   extension_id: string;
   store_platform: string | null;
   featured_placement_requested?: boolean | null;
+  listed_for_sale?: boolean | null;
   owner_id: string | null;
   featured_order: number | null;
   listing_country: string | null;
@@ -924,6 +925,11 @@ export default function AdminDashboard({
                               {row.status === "pending" ? "Featured requested" : "Featured: set order"}
                             </span>
                           ) : null}
+                          {row.listed_for_sale ? (
+                            <span className="rounded-md bg-emerald-100 px-1.5 py-0.5 text-[10px] font-bold uppercase text-emerald-900">
+                              Sell marketplace
+                            </span>
+                          ) : null}
                           {row.owner_id == null || row.is_platform_curated ? (
                             <span className="rounded-md bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold uppercase text-amber-900">
                               Platform curated
@@ -1082,6 +1088,21 @@ export default function AdminDashboard({
                             defaultValue={row.featured_order ?? ""}
                             className="mt-2 w-full max-w-xs rounded-xl border border-orange-200 bg-white px-3 py-2 text-sm tabular-nums outline-none focus:ring-2 focus:ring-orange-500/30 sm:w-48"
                           />
+                        </div>
+                        <div className="rounded-xl border border-emerald-200/80 bg-emerald-50/50 p-4">
+                          <label className="flex cursor-pointer items-start gap-3 text-sm text-emerald-950">
+                            <input
+                              type="checkbox"
+                              name="listedForSale"
+                              defaultChecked={!!row.listed_for_sale}
+                              className="mt-1 h-4 w-4 shrink-0 rounded border-emerald-300 text-emerald-700 focus:ring-emerald-600"
+                            />
+                            <span>
+                              <span className="font-semibold">Sell marketplace (/sell)</span> — show this listing on the
+                              acquisition page when status is approved. Makers normally opt in from the dashboard; admins can
+                              override here.
+                            </span>
+                          </label>
                         </div>
                         <button
                           type="submit"

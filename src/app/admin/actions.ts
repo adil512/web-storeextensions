@@ -69,6 +69,7 @@ export async function updateListingStatus(formData: FormData) {
 
   revalidatePath("/admin");
   revalidatePath("/");
+  revalidatePath("/sell");
   await revalidateExtensionListingPages(supabase, id);
   adminRedirectTab(formData, "queue");
 }
@@ -116,6 +117,7 @@ export async function adminUpdateListing(formData: FormData) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect("/admin/login?error=required");
+  let ownerUpdated = false;
 
   const { data: me } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
   if (!me || !isAdminRole(me.role)) {
@@ -172,6 +174,8 @@ export async function adminUpdateListing(formData: FormData) {
     nextSlug = await allocateListingSlug(supabase, name, id);
   }
 
+  const listed_for_sale = String(formData.get("listedForSale") ?? "") === "on";
+
   await supabase.from("listing_versions").insert({
     listing_id: id,
     editor_id: user.id,
@@ -188,6 +192,7 @@ export async function adminUpdateListing(formData: FormData) {
       store_platform,
       featured_order,
       slug: nextSlug,
+      listed_for_sale,
     })
     .eq("id", id);
 
@@ -264,6 +269,7 @@ export async function adminUpdateListing(formData: FormData) {
           redirect(`/admin?tab=catalog&catalogError=${encodeURIComponent(profErr.message)}`);
         }
         revalidatePath("/u", "layout");
+        ownerUpdated = true;
       }
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
@@ -280,7 +286,11 @@ export async function adminUpdateListing(formData: FormData) {
 
   revalidatePath("/admin");
   revalidatePath("/");
+  revalidatePath("/sell");
   await revalidateExtensionListingPages(supabase, id);
+  if (ownerUpdated) {
+    redirect(`/admin?tab=catalog&catalogNotice=${encodeURIComponent("Owner updated successfully.")}`);
+  }
   adminRedirectTab(formData, "catalog");
 }
 
@@ -358,6 +368,7 @@ export async function deleteExtensionListing(formData: FormData) {
 
   revalidatePath("/admin");
   revalidatePath("/");
+  revalidatePath("/sell");
   revalidatePath("/categories", "layout");
   revalidatePath("/u", "layout");
   revalidatePath("/leaderboard");

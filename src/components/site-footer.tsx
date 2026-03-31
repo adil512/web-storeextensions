@@ -5,6 +5,7 @@ import { CATEGORIES } from "@/lib/constants/listing";
 
 const FOOTER_PLATFORM = [
   { href: "/submit", label: "Submit extension" },
+  { href: "/sell", label: "Sell marketplace" },
   { href: "/extension-tools", label: "Extension tools" },
   { href: "/auth", label: "Log in / Sign up" },
 ];

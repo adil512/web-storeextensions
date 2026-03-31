@@ -30,7 +30,7 @@ export function ExtensionCommentsSection({
   comments: PublicListingComment[];
 }) {
   return (
-    <section className="rounded-2xl border border-zinc-200 bg-zinc-50/50 p-5 sm:p-6">
+    <section id="listing-comments" className="scroll-mt-24 rounded-2xl border border-zinc-200 bg-zinc-50/50 p-5 sm:p-6">
       <h2 className="text-lg font-bold text-zinc-900">Comments</h2>
       <p className="mt-1 text-sm text-zinc-600">
         Everyone can read the thread below.{" "}

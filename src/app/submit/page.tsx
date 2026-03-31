@@ -44,6 +44,7 @@ export default function SubmitPage() {
       primaryCountry: formData.get("primaryCountry"),
       languages: selectedLanguages,
       requestFeaturedPlacement: formData.get("requestFeaturedPlacement") === "on",
+      listedForSale: formData.get("listedForSale") === "on",
     };
 
     const response = await fetch("/api/extensions", {
@@ -148,6 +149,23 @@ export default function SubmitPage() {
               </button>
             ))}
           </div>
+        </div>
+        <div className="rounded-xl border border-orange-200/80 bg-orange-50/50 p-4">
+          <label className="flex cursor-pointer gap-3 text-sm leading-relaxed text-zinc-700">
+            <input
+              type="checkbox"
+              name="listedForSale"
+              className="mt-1 h-4 w-4 shrink-0 rounded border-zinc-300 text-orange-600 focus:ring-orange-500"
+            />
+            <span>
+              <span className="font-semibold text-zinc-900">List on the Sell marketplace</span> after approval — optional. Your
+              extension still appears on Launchpad and in categories either way; checking this also surfaces it on{" "}
+              <Link href="/sell" className="font-medium text-orange-600 underline-offset-2 hover:underline">
+                /sell
+              </Link>{" "}
+              with the install and geography details you provide.
+            </span>
+          </label>
         </div>
         <div className="rounded-xl border border-orange-200/80 bg-orange-50/50 p-4">
           <label className="flex cursor-pointer gap-3 text-sm leading-relaxed text-zinc-700">

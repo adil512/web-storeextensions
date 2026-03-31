@@ -12,7 +12,7 @@ import { isAdminRole, isSuperAdminRole } from "@/lib/profile-role";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 const CATALOG_SELECT =
-  "id,slug,name,description,category,status,featured_order,is_platform_curated,extension_id,store_platform,featured_placement_requested,listing_country,listing_region,listing_city,updated_at,owner_id,profiles!extension_listings_owner_id_fkey(username,email)";
+  "id,slug,name,description,category,status,featured_order,is_platform_curated,extension_id,store_platform,featured_placement_requested,listed_for_sale,listing_country,listing_region,listing_city,updated_at,owner_id,profiles!extension_listings_owner_id_fkey(username,email)";
 
 const ADMIN_TABS = [
   "overview",
@@ -39,6 +39,7 @@ export default async function AdminPage({
     commentNotice?: "approved" | "rejected" | "updated" | "deleted" | string;
     commentError?: string;
     catalogError?: string;
+    catalogNotice?: string;
   }>;
 }) {
   const sp = await searchParams;
@@ -68,6 +69,8 @@ export default async function AdminPage({
         ? ({ kind: "success" as const, message: "Blog post saved." })
         : sp.blogNotice === "deleted"
           ? ({ kind: "success" as const, message: "Blog post deleted." })
+          : typeof sp.catalogNotice === "string" && sp.catalogNotice.trim()
+            ? ({ kind: "success" as const, message: sp.catalogNotice.trim() })
           : typeof sp.blogError === "string" && sp.blogError.trim()
             ? ({ kind: "error" as const, message: sp.blogError.trim() })
             : sp.commentNotice === "approved"

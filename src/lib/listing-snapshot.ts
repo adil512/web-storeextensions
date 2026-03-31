@@ -15,5 +15,6 @@ export function snapshotFromListingRow(row: Record<string, unknown>) {
     users_by_region: row.users_by_region,
     featured_order: row.featured_order,
     featured_placement_requested: row.featured_placement_requested,
+    listed_for_sale: row.listed_for_sale,
   };
 }
