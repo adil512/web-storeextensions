@@ -241,7 +241,7 @@ export default async function PricingPage() {
                 <tr className="border-b border-zinc-200 bg-zinc-50/90">
                   <th className="px-4 py-3 font-semibold text-zinc-900 sm:px-6">Feature</th>
                   <th className="px-4 py-3 font-semibold text-zinc-700 sm:px-6">Free</th>
-                  <th className="px-4 py-3 font-semibold text-orange-800 sm:px-6">$10 boost</th>
+                  <th className="px-4 py-3 font-semibold text-orange-800 sm:px-6">$6 boost</th>
                   <th className="px-4 py-3 font-semibold text-zinc-900 sm:px-6">$40 lifetime</th>
                 </tr>
               </thead>
@@ -267,7 +267,7 @@ export default async function PricingPage() {
                 <tr>
                   <td className="px-4 py-3 font-medium text-zinc-900 sm:px-6">Price</td>
                   <td className="px-4 py-3 sm:px-6">$0</td>
-                  <td className="px-4 py-3 font-semibold text-orange-800 sm:px-6">$10</td>
+                  <td className="px-4 py-3 font-semibold text-orange-800 sm:px-6">$6</td>
                   <td className="px-4 py-3 font-semibold sm:px-6">$40</td>
                 </tr>
               </tbody>
