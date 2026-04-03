@@ -138,7 +138,7 @@ export default async function PricingPage() {
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-orange-800/80">Boost</p>
             <h2 className="mt-2 text-xl font-semibold text-zinc-900">Featured + quick launch</h2>
             <p className="mt-3 flex items-baseline gap-1">
-              <span className="text-4xl font-semibold tracking-tight text-zinc-950">$10</span>
+              <span className="text-4xl font-semibold tracking-tight text-zinc-950">$6</span>
               <span className="text-sm text-zinc-500">one-time</span>
             </p>
             <p className="mt-2 text-sm leading-relaxed text-zinc-700">Priority review, featured for months.</p>
