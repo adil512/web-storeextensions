@@ -124,7 +124,7 @@ export function ListingUpvote({
 
   return (
     <div className="rounded-xl border border-zinc-200/90 bg-white p-5 shadow-sm ring-1 ring-zinc-950/[0.04] sm:p-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">Community upvotes</p>
           <p className="mt-1 flex flex-wrap items-baseline gap-2">
@@ -142,7 +142,7 @@ export function ListingUpvote({
             type="button"
             disabled={loading}
             onClick={() => void toggle()}
-            className={`shrink-0 rounded-xl px-5 py-2.5 text-sm font-semibold shadow-sm transition disabled:opacity-50 ${
+            className={`w-full rounded-xl px-5 py-2.5 text-sm font-semibold shadow-sm transition disabled:opacity-50 sm:w-auto ${
               hasVoted
                 ? "bg-orange-600 text-white hover:bg-orange-700"
                 : "border border-orange-300 bg-orange-50 text-orange-950 hover:bg-orange-100"
@@ -153,7 +153,7 @@ export function ListingUpvote({
         ) : (
           <Link
             href="/auth"
-            className="shrink-0 rounded-xl bg-gradient-to-b from-orange-500 to-orange-600 px-5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:from-orange-600 hover:to-orange-700"
+            className="w-full rounded-xl bg-gradient-to-b from-orange-500 to-orange-600 px-5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:from-orange-600 hover:to-orange-700 sm:w-auto"
           >
             Sign in to upvote
           </Link>

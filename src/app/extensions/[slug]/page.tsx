@@ -196,7 +196,7 @@ export default async function ExtensionDetailPage({ params }: Props) {
   return (
     <div className="min-h-[50vh] bg-gradient-to-b from-zinc-100/60 to-zinc-50">
       <ExtensionViewTracker listingId={id} />
-      <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-14">
+      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
         <Link href="/#browse" className="text-sm font-medium text-orange-600 hover:text-orange-700">
           ← Back to listings
         </Link>
@@ -229,153 +229,180 @@ export default async function ExtensionDetailPage({ params }: Props) {
             </div>
           </div>
 
-          <div className="space-y-6 px-6 py-8 sm:px-8">
-            {listedForSale ? (
-              <aside className="scroll-mt-24 rounded-2xl border border-emerald-200/90 bg-gradient-to-br from-emerald-50 via-white to-teal-50/60 p-5 shadow-sm sm:p-6">
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-800/90">For buyers</p>
-                <h2 className="mt-2 text-lg font-bold tracking-tight text-emerald-950">This extension is listed for acquisition</h2>
-                <p className="mt-2 text-sm leading-relaxed text-emerald-900/85">
-                  The maker opted into our{" "}
-                  <Link href="/sell" className="font-semibold text-emerald-800 underline underline-offset-2 hover:text-emerald-950">
-                    Sell marketplace
-                  </Link>
-                  . You can reach them through their public profile (website and social links), or leave a public comment below
-                  (signing in required to post).
-                </p>
-                <div className="mt-4 flex flex-wrap gap-3">
-                  {!isCurated && makerUsername ? (
-                    <Link
-                      href={`/u/${makerUsername}`}
-                      className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-b from-emerald-600 to-emerald-700 px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-emerald-900/15 transition hover:from-emerald-700 hover:to-emerald-800"
+          <div className="px-6 py-8 sm:px-8">
+            <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
+              <div className="space-y-6">
+                {listedForSale ? (
+                  <aside className="scroll-mt-24 rounded-2xl border border-emerald-200/90 bg-gradient-to-br from-emerald-50 via-white to-teal-50/60 p-5 shadow-sm sm:p-6">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-800/90">For buyers</p>
+                    <h2 className="mt-2 text-lg font-bold tracking-tight text-emerald-950">This extension is listed for acquisition</h2>
+                    <p className="mt-2 text-sm leading-relaxed text-emerald-900/85">
+                      The maker opted into our{" "}
+                      <Link href="/sell" className="font-semibold text-emerald-800 underline underline-offset-2 hover:text-emerald-950">
+                        Sell marketplace
+                      </Link>
+                      . You can reach them through their public profile (website and social links), or leave a public comment below
+                      (signing in required to post).
+                    </p>
+                    <div className="mt-4 flex flex-wrap gap-3">
+                      {!isCurated && makerUsername ? (
+                        <Link
+                          href={`/u/${makerUsername}`}
+                          className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-b from-emerald-600 to-emerald-700 px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-emerald-900/15 transition hover:from-emerald-700 hover:to-emerald-800"
+                        >
+                          Contact maker
+                        </Link>
+                      ) : !isCurated ? (
+                        <Link
+                          href="#listing-comments"
+                          className="inline-flex items-center justify-center rounded-2xl border-2 border-emerald-300 bg-white px-5 py-2.5 text-sm font-bold text-emerald-900 transition hover:border-emerald-400 hover:bg-emerald-50/80"
+                        >
+                          Message via comments
+                        </Link>
+                      ) : (
+                        <Link
+                          href="/contact"
+                          className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-b from-emerald-600 to-emerald-700 px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-emerald-900/15 transition hover:from-emerald-700 hover:to-emerald-800"
+                        >
+                          Contact {SITE_NAME}
+                        </Link>
+                      )}
+                      <Link
+                        href="/sell"
+                        className="inline-flex items-center justify-center rounded-2xl border border-emerald-200 bg-white px-5 py-2.5 text-sm font-semibold text-emerald-900 transition hover:border-emerald-300 hover:bg-emerald-50/80"
+                      >
+                        Browse Sell
+                      </Link>
+                    </div>
+                    {!isOwner ? (
+                      <div className="mt-5 border-t border-emerald-100/80 pt-5">
+                        <ListingInquiryForm listingId={id} />
+                      </div>
+                    ) : (
+                      <p className="mt-5 border-t border-emerald-100/80 pt-5 text-xs text-emerald-900/85">
+                        Buyer inquiries appear in your{" "}
+                        <Link href="/dashboard/inquiries" className="font-semibold underline">
+                          Dashboard → Inquiries
+                        </Link>
+                        .
+                      </p>
+                    )}
+                  </aside>
+                ) : null}
+
+                <section className="rounded-2xl border border-zinc-100 bg-white p-5 sm:p-6">
+                  <h2 className="text-lg font-bold tracking-tight text-zinc-900">Overview</h2>
+                  <div className="mt-4 space-y-4 text-zinc-700">
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        h1: (props) => <h3 className="text-2xl font-black tracking-tight text-zinc-900" {...props} />,
+                        h2: (props) => <h4 className="text-xl font-bold tracking-tight text-zinc-900" {...props} />,
+                        h3: (props) => <h5 className="text-lg font-semibold text-zinc-900" {...props} />,
+                        p: (props) => <p className="text-base leading-relaxed" {...props} />,
+                        ul: (props) => <ul className="list-disc space-y-1 pl-6 text-base leading-relaxed" {...props} />,
+                        ol: (props) => <ol className="list-decimal space-y-1 pl-6 text-base leading-relaxed" {...props} />,
+                        li: (props) => <li className="leading-relaxed" {...props} />,
+                        blockquote: (props) => (
+                          <blockquote className="border-l-4 border-zinc-200 pl-4 italic text-zinc-600" {...props} />
+                        ),
+                        a: (props) => <a className="font-medium text-orange-600 underline hover:text-orange-700" {...props} />,
+                        code: (props) => <code className="rounded bg-zinc-100 px-1 py-0.5 text-[0.95em]" {...props} />,
+                      }}
                     >
-                      Contact maker
-                    </Link>
-                  ) : !isCurated ? (
-                    <Link
-                      href="#listing-comments"
-                      className="inline-flex items-center justify-center rounded-2xl border-2 border-emerald-300 bg-white px-5 py-2.5 text-sm font-bold text-emerald-900 transition hover:border-emerald-400 hover:bg-emerald-50/80"
-                    >
-                      Message via comments
-                    </Link>
-                  ) : (
-                    <Link
-                      href="/contact"
-                      className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-b from-emerald-600 to-emerald-700 px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-emerald-900/15 transition hover:from-emerald-700 hover:to-emerald-800"
-                    >
-                      Contact {SITE_NAME}
-                    </Link>
-                  )}
-                  <Link
-                    href="/sell"
-                    className="inline-flex items-center justify-center rounded-2xl border border-emerald-200 bg-white px-5 py-2.5 text-sm font-semibold text-emerald-900 transition hover:border-emerald-300 hover:bg-emerald-50/80"
-                  >
-                    Browse Sell
-                  </Link>
-                </div>
-                {!isOwner ? (
-                  <div className="mt-5 border-t border-emerald-100/80 pt-5">
-                    <ListingInquiryForm listingId={id} />
+                      {listing.description}
+                    </ReactMarkdown>
                   </div>
-                ) : (
-                  <p className="mt-5 border-t border-emerald-100/80 pt-5 text-xs text-emerald-900/85">
-                    Buyer inquiries appear in your{" "}
-                    <Link href="/dashboard/inquiries" className="font-semibold underline">
-                      Dashboard → Inquiries
-                    </Link>
-                    .
+                </section>
+
+                <div className="grid gap-4 rounded-2xl border border-zinc-100 bg-zinc-50/80 p-5 sm:grid-cols-2">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Category</p>
+                    <p className="mt-1">
+                      <Link
+                        href={categoryHref(listing.category)}
+                        className="font-semibold text-orange-600 hover:text-orange-700 hover:underline"
+                      >
+                        {listing.category}
+                      </Link>
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Platform</p>
+                    <p className="mt-1 font-semibold text-zinc-800">{platformLabel}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Extension ID</p>
+                    <p className="mt-1 break-all font-mono text-xs text-zinc-800">{extId || "—"}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Languages</p>
+                    <p className="mt-1 text-sm font-medium text-zinc-800">{listing.languages.join(", ")}</p>
+                  </div>
+                </div>
+
+                <ExtensionCommentsSection listingId={id} comments={comments} />
+              </div>
+
+              <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
+                <div className="rounded-2xl border border-zinc-200/90 bg-zinc-50/80 p-5 shadow-sm">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Asking price</p>
+                  <p className="mt-2 text-3xl font-black tracking-tight text-zinc-950">{priceLabel}</p>
+                  <div className="mt-5 grid grid-cols-2 gap-3 text-sm">
+                    <div className="rounded-xl border border-zinc-200 bg-white px-3 py-2">
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Active users</p>
+                      <p className="mt-1 font-bold tabular-nums text-zinc-900">{listing.current_users.toLocaleString("en-US")}</p>
+                    </div>
+                    <div className="rounded-xl border border-zinc-200 bg-white px-3 py-2">
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Uninstalls (30d)</p>
+                      <p className="mt-1 font-bold tabular-nums text-zinc-900">
+                        {listing.uninstalls_last_30_days.toLocaleString("en-US")}
+                      </p>
+                    </div>
+                    <div className="rounded-xl border border-zinc-200 bg-white px-3 py-2">
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Page views</p>
+                      <p className="mt-1 font-bold tabular-nums text-zinc-900">{views.toLocaleString("en-US")}</p>
+                    </div>
+                    <div className="rounded-xl border border-zinc-200 bg-white px-3 py-2">
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Store clicks</p>
+                      <p className="mt-1 font-bold tabular-nums text-zinc-900">{clicks.toLocaleString("en-US")}</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-5 space-y-3">
+                    {listing.store_url ? (
+                      <TrackedStoreLink
+                        listingId={id}
+                        href={listing.store_url}
+                        className="flex w-full items-center justify-center rounded-xl bg-gradient-to-b from-orange-500 to-orange-600 px-4 py-3 text-sm font-semibold text-white shadow-md shadow-orange-500/25 transition hover:from-orange-600 hover:to-orange-700"
+                      >
+                        {installLabel}
+                      </TrackedStoreLink>
+                    ) : null}
+
+                    <ListingUpvote listingId={id} initialCount={upvotes} />
+
+                    {makerUsername ? (
+                      <Link
+                        href={`/u/${makerUsername}`}
+                        className="inline-flex w-full items-center justify-center rounded-xl border border-zinc-300 bg-white px-4 py-3 text-sm font-semibold text-zinc-800 transition hover:border-orange-200 hover:text-orange-700"
+                      >
+                        View maker profile
+                      </Link>
+                    ) : null}
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Safety</p>
+                  <p className="mt-2 text-sm leading-relaxed text-zinc-600">
+                    Always verify permissions, ratings, and publisher details in the official store before installing.
                   </p>
-                )}
+                </div>
+
+                <ReportListingButton listingId={id} />
               </aside>
-            ) : null}
-            <div className="space-y-4 text-zinc-700">
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                components={{
-                  h1: (props) => <h2 className="text-2xl font-black tracking-tight text-zinc-900" {...props} />,
-                  h2: (props) => <h3 className="text-xl font-bold tracking-tight text-zinc-900" {...props} />,
-                  h3: (props) => <h4 className="text-lg font-semibold text-zinc-900" {...props} />,
-                  p: (props) => <p className="text-base leading-relaxed" {...props} />,
-                  ul: (props) => <ul className="list-disc space-y-1 pl-6 text-base leading-relaxed" {...props} />,
-                  ol: (props) => <ol className="list-decimal space-y-1 pl-6 text-base leading-relaxed" {...props} />,
-                  li: (props) => <li className="leading-relaxed" {...props} />,
-                  blockquote: (props) => (
-                    <blockquote className="border-l-4 border-zinc-200 pl-4 italic text-zinc-600" {...props} />
-                  ),
-                  a: (props) => <a className="font-medium text-orange-600 underline hover:text-orange-700" {...props} />,
-                  code: (props) => <code className="rounded bg-zinc-100 px-1 py-0.5 text-[0.95em]" {...props} />,
-                }}
-              >
-                {listing.description}
-              </ReactMarkdown>
             </div>
-
-            <div className="grid gap-3 rounded-2xl border border-zinc-100 bg-zinc-50/80 p-4 text-sm sm:grid-cols-2">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Category</p>
-                <p className="mt-1">
-                  <Link
-                    href={categoryHref(listing.category)}
-                    className="font-semibold text-orange-600 hover:text-orange-700 hover:underline"
-                  >
-                    {listing.category}
-                  </Link>
-                </p>
-              </div>
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Platform</p>
-                <p className="mt-1 font-semibold text-zinc-800">{platformLabel}</p>
-              </div>
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Price</p>
-                <p className="mt-1 font-semibold text-zinc-800">{priceLabel}</p>
-              </div>
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Extension ID</p>
-                <p className="mt-1 break-all font-mono text-xs text-zinc-800">{extId || "—"}</p>
-              </div>
-              <div className="sm:col-span-2">
-                <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Listing analytics</p>
-                <p className="mt-1 text-zinc-700">
-                  <span className="font-semibold tabular-nums">{views.toLocaleString("en-US")}</span> page views ·{" "}
-                  <span className="font-semibold tabular-nums">{clicks.toLocaleString("en-US")}</span> store clicks
-                </p>
-              </div>
-            </div>
-
-            <ListingUpvote listingId={id} initialCount={upvotes} />
-
-            {listing.store_url ? (
-              <TrackedStoreLink
-                listingId={id}
-                href={listing.store_url}
-                className="flex w-full items-center justify-center rounded-2xl bg-gradient-to-b from-orange-500 to-orange-600 px-6 py-4 text-sm font-semibold text-white shadow-md shadow-orange-500/25 transition hover:from-orange-600 hover:to-orange-700 sm:inline-flex sm:w-auto"
-              >
-                {installLabel}
-              </TrackedStoreLink>
-            ) : null}
-
-            <div className="grid gap-4 rounded-2xl border border-zinc-100 bg-zinc-50/80 p-5 sm:grid-cols-2">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Active users</p>
-                <p className="mt-1 text-lg font-bold tabular-nums text-zinc-900">
-                  {listing.current_users.toLocaleString("en-US")}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Uninstalls (30d)</p>
-                <p className="mt-1 text-lg font-bold tabular-nums text-zinc-900">
-                  {listing.uninstalls_last_30_days.toLocaleString("en-US")}
-                </p>
-              </div>
-              <div className="sm:col-span-2">
-                <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Languages</p>
-                <p className="mt-1 text-sm font-medium text-zinc-800">{listing.languages.join(", ")}</p>
-              </div>
-            </div>
-
-            <ExtensionCommentsSection listingId={id} comments={comments} />
-
-            <ReportListingButton listingId={id} />
           </div>
         </article>
       </div>
