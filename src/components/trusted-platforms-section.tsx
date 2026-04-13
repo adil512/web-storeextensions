@@ -19,8 +19,8 @@ const PLATFORMS = [
   },
   {
     name: "SaaSHub",
-    description: "Listed among Chrome extension directory resources and alternatives.",
-    href: "https://www.saashub.com/google-chrome-extensions-directory-alternatives",
+    description: "Featured on SaaSHub as Web Store Extensions.",
+    href: "https://www.saashub.com/web-store-extensions",
     accent: "from-sky-500/90 to-indigo-500/90",
     ring: "ring-sky-200/80",
     badge: "SH",
@@ -44,17 +44,12 @@ export default function TrustedPlatformsSection() {
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-orange-200/60 to-transparent" />
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-orange-700/80">Social proof</p>
           <h2
             id="trusted-platforms-heading"
             className="mt-3 text-2xl font-black tracking-tight text-zinc-950 sm:text-3xl"
           >
-            Featured on trusted platforms
+            We Are Featured
           </h2>
-          <p className="mt-3 text-sm leading-relaxed text-zinc-600 sm:text-base">
-            Our directory is recognized across product communities, review sites, and SaaS listings—so makers and users can
-            discover us with confidence.
-          </p>
         </div>
 
         <ul className="mt-10 grid gap-5 sm:grid-cols-3">
