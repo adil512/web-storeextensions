@@ -11,6 +11,12 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
+function formatPriceUsd(price: number | string | null | undefined): string {
+  const n = typeof price === "number" ? price : Number(price ?? NaN);
+  if (!Number.isFinite(n) || n <= 0) return "Free";
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 }).format(n);
+}
+
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -34,7 +40,7 @@ export default async function CategoryPage({ params }: Props) {
   const supabase = await createSupabaseServerClient();
   const { data: extensions, error } = await supabase
     .from("extension_listings")
-    .select("id,slug,name,description,category,current_users,languages,store_url,featured_order,is_platform_curated,upvote_count")
+    .select("id,slug,name,description,category,current_users,languages,store_url,featured_order,is_platform_curated,upvote_count,price_usd")
     .eq("status", "approved")
     .eq("category", categoryName)
     .order("featured_order", { ascending: true, nullsFirst: false })
@@ -105,7 +111,10 @@ export default async function CategoryPage({ params }: Props) {
                   <h2 className="text-lg font-bold text-zinc-900 hover:text-orange-700">{listing.name}</h2>
                 </Link>
                 <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-zinc-600">{listing.description}</p>
-                <p className="mt-4 text-xs text-zinc-500">{listing.current_users.toLocaleString()} users · {listing.languages.length} languages</p>
+                <p className="mt-4 text-xs text-zinc-500">
+                  {listing.current_users.toLocaleString()} users · {listing.languages.length} languages ·{" "}
+                  {formatPriceUsd((listing as { price_usd?: number | string | null }).price_usd)}
+                </p>
                 <div className="mt-3">
                   <ListingUpvote listingId={listing.id} initialCount={listing.upvote_count ?? 0} compact />
                 </div>

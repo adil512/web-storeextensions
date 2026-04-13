@@ -20,6 +20,7 @@ type Listing = {
   homepage_url: string | null;
   store_url: string | null;
   logo_url: string | null;
+  price_usd?: number | string | null;
   status: string;
   store_platform?: string | null;
   featured_placement_requested?: boolean | null;
@@ -84,6 +85,7 @@ export default function EditPendingListingPage() {
       homepageUrl: formData.get("homepageUrl"),
       storeUrl: formData.get("storeUrl"),
       logoUrl: formData.get("logoUrl"),
+      priceUsd: formData.get("priceUsd"),
       primaryCountry,
       languages: selectedLanguages,
       requestFeaturedPlacement: formData.get("requestFeaturedPlacement") === "on",
@@ -220,6 +222,18 @@ export default function EditPendingListingPage() {
             defaultValue={listing.uninstalls_last_30_days}
             placeholder="Uninstalls in 30 days"
             className="w-full rounded-xl border border-zinc-300 px-4 py-3 text-sm"
+          />
+        </div>
+        <div>
+          <label className="text-sm font-semibold text-zinc-800">Price in USD (optional)</label>
+          <input
+            name="priceUsd"
+            type="number"
+            min={0}
+            step="0.01"
+            defaultValue={listing.price_usd == null ? "" : String(listing.price_usd)}
+            placeholder="e.g. 9.99 (leave blank if free)"
+            className="mt-1 w-full rounded-xl border border-zinc-300 px-4 py-3 text-sm"
           />
         </div>
         <div>

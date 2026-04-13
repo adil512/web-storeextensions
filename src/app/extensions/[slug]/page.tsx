@@ -42,8 +42,15 @@ type ExtensionListingPageRow = {
   languages: string[];
   view_count?: number | null;
   store_click_count?: number | null;
+  price_usd?: number | string | null;
   profiles: unknown;
 };
+
+function formatPriceUsd(price: number | string | null | undefined): string {
+  const n = typeof price === "number" ? price : Number(price ?? NaN);
+  if (!Number.isFinite(n) || n <= 0) return "Free";
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 }).format(n);
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug: raw } = await params;
@@ -176,6 +183,7 @@ export default async function ExtensionDetailPage({ params }: Props) {
 
   const views = listing.view_count ?? 0;
   const clicks = listing.store_click_count ?? 0;
+  const priceLabel = formatPriceUsd(listing.price_usd);
   const extId = listing.extension_id as string | undefined;
   const upvotes = (listing as { upvote_count?: number }).upvote_count ?? 0;
   const storePlatform = parseStorePlatform(
@@ -316,6 +324,10 @@ export default async function ExtensionDetailPage({ params }: Props) {
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Platform</p>
                 <p className="mt-1 font-semibold text-zinc-800">{platformLabel}</p>
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Price</p>
+                <p className="mt-1 font-semibold text-zinc-800">{priceLabel}</p>
               </div>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Extension ID</p>

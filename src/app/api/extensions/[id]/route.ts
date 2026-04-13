@@ -7,6 +7,14 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type RouteCtx = { params: Promise<{ id: string }> };
 
+function parseOptionalPrice(raw: unknown): number | null {
+  const s = typeof raw === "string" ? raw.trim() : String(raw ?? "").trim();
+  if (!s) return null;
+  const n = Number(s);
+  if (!Number.isFinite(n) || n < 0) return Number.NaN;
+  return Math.round(n * 100) / 100;
+}
+
 /** Owner may edit their own listing while status is pending (version history recorded). */
 export async function PATCH(request: Request, ctx: RouteCtx) {
   const { id } = await ctx.params;
@@ -118,6 +126,17 @@ export async function PATCH(request: Request, ctx: RouteCtx) {
   if (name !== row.name) {
     slug = await allocateListingSlug(supabase, name, id);
   }
+  let price_usd: number | null;
+  if (body.priceUsd !== undefined) {
+    const parsedPrice = parseOptionalPrice(body.priceUsd);
+    if (Number.isNaN(parsedPrice)) {
+      return NextResponse.json({ error: "Price must be a non-negative number (e.g. 9.99)." }, { status: 400 });
+    }
+    price_usd = parsedPrice;
+  } else {
+    const existingPrice = Number((row as { price_usd?: number | string | null }).price_usd);
+    price_usd = Number.isFinite(existingPrice) ? Math.round(existingPrice * 100) / 100 : null;
+  }
 
   const updatePayload = {
     name,
@@ -132,6 +151,7 @@ export async function PATCH(request: Request, ctx: RouteCtx) {
     homepage_url: body.homepageUrl != null ? String(body.homepageUrl).trim() || null : row.homepage_url,
     store_url: body.storeUrl != null ? String(body.storeUrl).trim() || null : row.store_url,
     logo_url: body.logoUrl != null ? String(body.logoUrl).trim() || null : row.logo_url,
+    price_usd,
     listing_country:
       body.primaryCountry != null ? String(body.primaryCountry).trim() || null : (row.listing_country ?? null),
     languages: Array.isArray(body.languages) ? body.languages : row.languages,

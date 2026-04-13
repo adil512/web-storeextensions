@@ -9,6 +9,7 @@ export type LatestApprovedRow = {
   current_users: number;
   languages: string[];
   featured_order: number | null;
+  price_usd?: number | string | null;
 };
 
 const PAGE_SIZE = 100;
@@ -34,6 +35,12 @@ function ChevronIcon({ className }: { className?: string }) {
       />
     </svg>
   );
+}
+
+function formatPriceUsd(price: number | string | null | undefined): string {
+  const n = typeof price === "number" ? price : Number(price ?? NaN);
+  if (!Number.isFinite(n) || n <= 0) return "Free";
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 }).format(n);
 }
 
 export default function HomeLatestApproved({ listings, totalCount, currentPage }: Props) {
@@ -121,9 +128,12 @@ export default function HomeLatestApproved({ listings, totalCount, currentPage }
                       )}
                     </div>
                     <div className="flex min-w-0 items-center gap-2">
-                      <span className="min-w-0 truncate text-[15px] font-semibold leading-snug text-zinc-900 transition group-hover:text-orange-700">
-                        {listing.name}
-                      </span>
+                      <div className="min-w-0">
+                        <span className="block min-w-0 truncate text-[15px] font-semibold leading-snug text-zinc-900 transition group-hover:text-orange-700">
+                          {listing.name}
+                        </span>
+                        <span className="text-xs font-medium text-zinc-500">{formatPriceUsd(listing.price_usd)}</span>
+                      </div>
                       <ChevronIcon className="hidden h-4 w-4 shrink-0 text-zinc-300 transition group-hover:translate-x-0.5 group-hover:text-orange-500 sm:block" />
                     </div>
                     <div className="flex items-center justify-end">
@@ -175,6 +185,10 @@ export default function HomeLatestApproved({ listings, totalCount, currentPage }
                       <div>
                         <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Languages</p>
                         <p className="mt-0.5 font-medium tabular-nums text-zinc-600">{(listing.languages ?? []).length}</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Price</p>
+                        <p className="mt-0.5 font-medium text-zinc-700">{formatPriceUsd(listing.price_usd)}</p>
                       </div>
                     </div>
                   </Link>

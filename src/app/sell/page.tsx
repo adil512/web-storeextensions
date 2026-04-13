@@ -44,6 +44,7 @@ type Row = {
   current_users: number | null;
   listing_country: string | null;
   store_url: string | null;
+  price_usd: number | string | null;
   status: string;
   owner_id: string | null;
   profiles:
@@ -67,12 +68,18 @@ const formatUsers = (n: number | null | undefined) => {
   return String(Math.round(v));
 };
 
+const formatPriceUsd = (price: number | string | null | undefined) => {
+  const n = typeof price === "number" ? price : Number(price ?? NaN);
+  if (!Number.isFinite(n) || n <= 0) return "Free";
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 }).format(n);
+};
+
 export default async function SellPage() {
   const supabase = await createSupabaseServerClient();
   const { data: rows } = await supabase
     .from("extension_listings")
     .select(
-      "id, slug, name, description, category, logo_url, upvote_count, current_users, listing_country, store_url, status, owner_id, profiles!extension_listings_owner_id_fkey(username, full_name)"
+      "id, slug, name, description, category, logo_url, upvote_count, current_users, listing_country, store_url, price_usd, status, owner_id, profiles!extension_listings_owner_id_fkey(username, full_name)"
     )
     .eq("status", "approved")
     .eq("listed_for_sale", true)
@@ -143,7 +150,7 @@ export default async function SellPage() {
                     <div className="flex gap-4">
                       <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl border border-zinc-100 bg-zinc-50 shadow-inner">
                         {ext.logo_url ? (
-                          <Image src={ext.logo_url} alt="" fill className="object-cover" sizes="64px" />
+                          <Image src={ext.logo_url} alt="" fill className="object-cover" sizes="64px" unoptimized />
                         ) : (
                           <div className="flex h-full items-center justify-center text-xl font-black text-zinc-300">
                             {ext.name.charAt(0)}
@@ -183,6 +190,7 @@ export default async function SellPage() {
                       </p>
                     </div>
                   </div>
+                  <p className="px-4 pt-3 text-xs font-medium text-zinc-600">Price: {formatPriceUsd(ext.price_usd)}</p>
 
                   <div className="mt-auto flex flex-wrap items-center gap-2 p-4 pt-3">
                     <ListingUpvote listingId={ext.id} initialCount={ext.upvote_count ?? 0} compact />

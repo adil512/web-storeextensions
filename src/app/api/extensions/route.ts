@@ -6,6 +6,14 @@ import { notifyAdminNewSubmission } from "@/lib/notify-admin";
 import { isValidStorePlatform, parseStorePlatform } from "@/lib/constants/listing";
 import { allocateListingSlug } from "@/lib/listing-slug";
 
+function parseOptionalPrice(raw: unknown): number | null {
+  const s = typeof raw === "string" ? raw.trim() : String(raw ?? "").trim();
+  if (!s) return null;
+  const n = Number(s);
+  if (!Number.isFinite(n) || n < 0) return Number.NaN;
+  return Math.round(n * 100) / 100;
+}
+
 export async function POST(request: Request) {
   const { supabase, user } = await requireAuth();
   const body = await request.json();
@@ -64,6 +72,10 @@ export async function POST(request: Request) {
   const nameTrimmed = String(body.name ?? "").trim();
   const primaryCountry = String(body.primaryCountry ?? "").trim();
   const slug = await allocateListingSlug(supabase, nameTrimmed);
+  const priceUsd = parseOptionalPrice(body.priceUsd);
+  if (Number.isNaN(priceUsd)) {
+    return NextResponse.json({ error: "Price must be a non-negative number (e.g. 9.99)." }, { status: 400 });
+  }
 
   const payload = {
     owner_id: user.id,
@@ -80,6 +92,7 @@ export async function POST(request: Request) {
     homepage_url: body.homepageUrl?.trim() || null,
     store_url: body.storeUrl?.trim() || null,
     logo_url: body.logoUrl?.trim() || null,
+    price_usd: priceUsd,
     status: "pending",
     listing_country: primaryCountry || geo.listing_country,
     listing_region: geo.listing_region,

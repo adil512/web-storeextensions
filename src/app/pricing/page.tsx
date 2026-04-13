@@ -26,11 +26,11 @@ const faqs = [
     a: "You submit like everyone else and go through moderation. There is no charge. To keep the directory healthy, we may archive or remove older free listings after some time if we need space—always subject to our terms and editorial standards.",
   },
   {
-    q: "What do I get for $10?",
+    q: "What do I get for $6?",
     a: "You get a faster, prioritized review path and featured placement on the homepage for a multi-month window (exact duration is confirmed at checkout). Ideal when you want visibility soon without a long-term commitment.",
   },
   {
-    q: "What does the $40 lifetime plan include?",
+    q: "What does the $25 lifetime plan include?",
     a: "It is meant for makers who want a long-term home on the directory: extended featured eligibility and a listing we treat as durable, except where removal is required for policy, legal, or safety reasons.",
   },
   {
@@ -132,7 +132,7 @@ export default async function PricingPage() {
             </Link>
           </article>
 
-          {/* Boost $10 */}
+          {/* Boost $6 */}
           <article className="relative flex flex-col rounded-2xl border-2 border-orange-400/80 bg-gradient-to-b from-white to-orange-50/40 p-6 shadow-[0_20px_60px_-24px_rgba(234,88,12,0.35)] sm:p-8 lg:-mt-2 lg:mb-2 lg:scale-[1.02]">
             <span className="absolute right-5 top-5 rounded-full bg-orange-600 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
               Popular
@@ -140,7 +140,7 @@ export default async function PricingPage() {
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-orange-800/80">Boost</p>
             <h2 className="mt-2 text-xl font-semibold text-zinc-900">Featured + quick launch</h2>
             <p className="mt-3 flex items-baseline gap-1">
-              <span className="text-4xl font-semibold tracking-tight text-zinc-950">$10</span>
+              <span className="text-4xl font-semibold tracking-tight text-zinc-950">$6</span>
               <span className="text-sm text-zinc-500">one-time</span>
             </p>
             <p className="mt-2 text-sm leading-relaxed text-zinc-700">Priority review, featured for months.</p>
@@ -174,12 +174,12 @@ export default async function PricingPage() {
             </Link>
           </article>
 
-          {/* Lifetime $40 */}
+          {/* Lifetime $25 */}
           <article className="flex flex-col rounded-2xl border border-zinc-200/90 bg-white p-6 shadow-[0_1px_0_0_rgba(0,0,0,0.04),0_16px_48px_-28px_rgba(0,0,0,0.15)] sm:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-zinc-500">Pro</p>
             <h2 className="mt-2 text-xl font-semibold text-zinc-900">Lifetime + featured</h2>
             <p className="mt-3 flex items-baseline gap-1">
-              <span className="text-4xl font-semibold tracking-tight text-zinc-950">$40</span>
+              <span className="text-4xl font-semibold tracking-tight text-zinc-950">$25</span>
               <span className="text-sm text-zinc-500">one-time</span>
             </p>
             <p className="mt-2 text-sm leading-relaxed text-zinc-600">Long-term presence and top placement.</p>
@@ -243,8 +243,8 @@ export default async function PricingPage() {
                 <tr className="border-b border-zinc-200 bg-zinc-50/90">
                   <th className="px-4 py-3 font-semibold text-zinc-900 sm:px-6">Feature</th>
                   <th className="px-4 py-3 font-semibold text-zinc-700 sm:px-6">Free</th>
-                  <th className="px-4 py-3 font-semibold text-orange-800 sm:px-6">$10 boost</th>
-                  <th className="px-4 py-3 font-semibold text-zinc-900 sm:px-6">$40 lifetime</th>
+                  <th className="px-4 py-3 font-semibold text-orange-800 sm:px-6">$6 boost</th>
+                  <th className="px-4 py-3 font-semibold text-zinc-900 sm:px-6">$25 lifetime</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-100 text-zinc-700">
@@ -269,8 +269,8 @@ export default async function PricingPage() {
                 <tr>
                   <td className="px-4 py-3 font-medium text-zinc-900 sm:px-6">Price</td>
                   <td className="px-4 py-3 sm:px-6">$0</td>
-                  <td className="px-4 py-3 font-semibold text-orange-800 sm:px-6">$10</td>
-                  <td className="px-4 py-3 font-semibold sm:px-6">$40</td>
+                  <td className="px-4 py-3 font-semibold text-orange-800 sm:px-6">$6</td>
+                  <td className="px-4 py-3 font-semibold sm:px-6">$25</td>
                 </tr>
               </tbody>
             </table>

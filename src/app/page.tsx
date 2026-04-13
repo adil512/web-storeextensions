@@ -44,13 +44,13 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ p
     await Promise.all([
       supabase
         .from("extension_listings")
-        .select("id,slug,name,description,category,current_users,languages,store_url")
+        .select("id,slug,name,description,category,current_users,languages,store_url,price_usd")
         .eq("status", "approved")
         .not("featured_order", "is", null)
         .order("featured_order", { ascending: true }),
       supabase
         .from("extension_listings")
-        .select("id,slug,name,category,current_users,languages,featured_order", { count: "exact" })
+        .select("id,slug,name,category,current_users,languages,featured_order,price_usd", { count: "exact" })
         .eq("status", "approved")
         .order("featured_order", { ascending: true, nullsFirst: false })
         .order("created_at", { ascending: false })

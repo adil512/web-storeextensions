@@ -11,7 +11,14 @@ export type FeaturedListingCard = {
   category: string;
   current_users: number;
   store_url: string | null;
+  price_usd?: number | string | null;
 };
+
+function formatPriceUsd(price: number | string | null | undefined): string {
+  const n = typeof price === "number" ? price : Number(price ?? NaN);
+  if (!Number.isFinite(n) || n <= 0) return "Free";
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 }).format(n);
+}
 
 function FeaturedCard({ listing }: { listing: FeaturedListingCard }) {
   return (
@@ -25,7 +32,9 @@ function FeaturedCard({ listing }: { listing: FeaturedListingCard }) {
         </div>
         <h3 className="line-clamp-2 text-base font-bold text-zinc-900 group-hover:text-orange-700">{listing.name}</h3>
         <p className="mt-1.5 line-clamp-2 flex-1 text-xs leading-relaxed text-zinc-600">{listing.description}</p>
-        <p className="mt-3 text-[11px] font-medium text-zinc-500">{listing.current_users.toLocaleString()} active users</p>
+        <p className="mt-3 text-[11px] font-medium text-zinc-500">
+          {listing.current_users.toLocaleString()} active users · {formatPriceUsd(listing.price_usd)}
+        </p>
       </Link>
       {listing.store_url ? (
         <a

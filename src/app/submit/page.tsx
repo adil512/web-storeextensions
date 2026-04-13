@@ -41,6 +41,7 @@ export default function SubmitPage() {
       homepageUrl: formData.get("homepageUrl"),
       storeUrl: formData.get("storeUrl"),
       logoUrl: formData.get("logoUrl"),
+      priceUsd: formData.get("priceUsd"),
       primaryCountry: formData.get("primaryCountry"),
       languages: selectedLanguages,
       requestFeaturedPlacement: formData.get("requestFeaturedPlacement") === "on",
@@ -123,6 +124,17 @@ export default function SubmitPage() {
         <div className="grid gap-4 sm:grid-cols-2">
           <input name="currentUsers" type="number" min={0} required placeholder="Current users" className="w-full rounded-xl border border-zinc-300 px-4 py-3 text-sm" />
           <input name="uninstalls" type="number" min={0} required placeholder="Uninstalls in 30 days" className="w-full rounded-xl border border-zinc-300 px-4 py-3 text-sm" />
+        </div>
+        <div>
+          <label className="text-sm font-semibold text-zinc-800">Price in USD (optional)</label>
+          <input
+            name="priceUsd"
+            type="number"
+            min={0}
+            step="0.01"
+            placeholder="e.g. 9.99 (leave blank if free)"
+            className="mt-1 w-full rounded-xl border border-zinc-300 px-4 py-3 text-sm"
+          />
         </div>
         <div>
           <label className="text-sm font-semibold text-zinc-800">Primary country (most users)</label>
