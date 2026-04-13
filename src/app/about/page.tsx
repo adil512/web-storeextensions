@@ -68,12 +68,13 @@ export default function AboutPage() {
           <article className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
             <div className="relative h-64 w-full bg-zinc-100 sm:h-80">
               <Image
-                src="/our-team.webp"
+                src="/our-team.webp?v=1"
                 alt="Our team"
                 fill
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 70vw"
                 priority
+                unoptimized
               />
             </div>
             <div className="p-6">
