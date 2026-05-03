@@ -28,6 +28,9 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL(origin),
     title: `${SITE_NAME} — Browser extension directory`,
     description: "Web Store Extensions — submit and discover browser extensions with community moderation.",
+    verification: {
+      google: "_qWUj2DxpguzIacUMTqf4AnBqFbmcoATfj6WviM_mRc",
+    },
   };
 }
 
