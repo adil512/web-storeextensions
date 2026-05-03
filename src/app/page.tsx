@@ -24,9 +24,10 @@ export async function generateMetadata({
   const canonicalPath = isPaginated ? `/?page=${raw}` : "/";
 
   return {
-    title: "Submit Your Browser Extension & Get Users – Chrome, Firefox Extension Marketplace",
+    title:
+      "Promote Chrome Extensions: No-1 Chrome Extension Marketplace for Buy & Sell Extensions",
     description:
-      "List your browser extensions free and reach more users for free. Our extension marketplace lets developers submit, manage listings, and showcase Chrome, Firefox, and Edge extensions to a growing audience.",
+      "Promote Chrome Extensions: No-1 Chrome Extension Marketplace for Buy & Sell Extensions. List your browser extensions free and reach more users for free. Our extension marketplace lets developers submit, manage listings, and showcase Chrome extensions to a growing audience.",
     alternates: { canonical: await canonicalUrl(canonicalPath) },
   };
 }
