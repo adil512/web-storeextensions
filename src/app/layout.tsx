@@ -24,15 +24,14 @@ const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim() || "";
 
 const ADSENSE_CLIENT = "ca-pub-7401286458777387";
 
+const GOOGLE_SITE_VERIFICATION = "_qWUj2DxpguzIacUMTqf4AnBqFbmcoATfj6WviM_mRc";
+
 export async function generateMetadata(): Promise<Metadata> {
   const origin = await publicSiteOrigin();
   return {
     metadataBase: new URL(origin),
     title: `${SITE_NAME} — Browser extension directory`,
     description: "Web Store Extensions — submit and discover browser extensions with community moderation.",
-    verification: {
-      google: "_qWUj2DxpguzIacUMTqf4AnBqFbmcoATfj6WviM_mRc",
-    },
   };
 }
 
@@ -46,29 +45,33 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      {GA_ID ? (
-        <>
-          <Script
-            id="ga-loader"
-            src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
-            strategy="afterInteractive"
-          />
-          <Script id="ga-init" strategy="afterInteractive">
-            {`
+      <head>
+        <meta name="google-site-verification" content={GOOGLE_SITE_VERIFICATION} />
+        <meta name="google-adsense-account" content={ADSENSE_CLIENT} />
+        {GA_ID ? (
+          <>
+            <Script
+              id="ga-loader"
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="ga-init" strategy="afterInteractive">
+              {`
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
               gtag('config', '${GA_ID}');
             `}
-          </Script>
-        </>
-      ) : null}
-      <Script
-        id="adsense-loader"
-        strategy="afterInteractive"
-        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
-        crossOrigin="anonymous"
-      />
+            </Script>
+          </>
+        ) : null}
+        <Script
+          id="adsense-loader"
+          strategy="afterInteractive"
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
+          crossOrigin="anonymous"
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-zinc-50 text-zinc-900">
         <SiteHeader />
         <main className="flex-1">{children}</main>
