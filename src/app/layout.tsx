@@ -22,6 +22,8 @@ const geistMono = Geist_Mono({
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim() || "";
 
+const ADSENSE_CLIENT = "ca-pub-7401286458777387";
+
 export async function generateMetadata(): Promise<Metadata> {
   const origin = await publicSiteOrigin();
   return {
@@ -61,6 +63,12 @@ export default function RootLayout({
           </Script>
         </>
       ) : null}
+      <Script
+        id="adsense-loader"
+        strategy="afterInteractive"
+        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
+        crossOrigin="anonymous"
+      />
       <body className="min-h-full flex flex-col bg-zinc-50 text-zinc-900">
         <SiteHeader />
         <main className="flex-1">{children}</main>
