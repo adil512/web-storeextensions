@@ -32,8 +32,8 @@ export function SellHero() {
         <div className="inline-flex max-w-full items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-bold leading-snug text-orange-200/95 sm:text-xs sm:px-4">
           #1 Browser Extension Selling & Buying Marketplace
         </div>
-        <h1 className="mt-5 max-w-4xl text-4xl font-black leading-[1.1] tracking-tight sm:text-5xl lg:text-6xl">
-          Marketplace to Buy and Sell Chrome Extensions Securely
+        <h1 className="mt-5 whitespace-nowrap text-3xl font-black leading-[1.1] tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
+          Buy and Sell Chrome Extensions
         </h1>
         <p className="mt-5 max-w-2xl text-base leading-relaxed text-zinc-300 sm:text-lg">
           Buy and sell Chrome extensions in a verified marketplace with secure listings and trusted transactions.
